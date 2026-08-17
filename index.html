@@ -59,9 +59,10 @@ const ROUTES={"2":["Schlieren, Geissweid","Schlieren, Zentrum/Bahnhof","Schliere
 const COLORS={"2": "#D71920", "3": "#83B81A", "4": "#005CA9", "5": "#7A4A21", "6": "#8A2A2B", "7": "#111111", "8": "#69A82F", "9": "#17458F", "10": "#E779A8", "11": "#56A63C", "12": "#79C7E3", "13": "#F2A100", "14": "#7CB9D8", "15": "#B1428C", "16": "#007C91", "17": "#8B1F35", "50": "#8B1F35", "51": "#005CA9"};
 const TEXTCOLORS={"13": "#111111", "12": "#111111", "14": "#111111", "10": "#111111"};
 const IMPORTANT=["Römerhof", "Goldbrunnenplatz", "Escher-Wyss-Platz", "Bahnhof Enge", "Bürkliplatz", "Paradeplatz", "Bahnhofstrasse/HB", "Central", "Bellevue", "Bahnhof Stadelhofen", "Stauffacher", "Milchbuck", "Bahnhof Oerlikon", "Zürich Flughafen"];
-const HOTSPOTS={"Zürich Flughafen":[72.0,5.0],"Seebach":[68.0,11.5],"Auzelg":[79.0,18.0],"Bahnhof Oerlikon":[65.5,23.0],"Milchbuck":[59.0,39.5],"Bucheggplatz":[52.0,43.5],"Escher-Wyss-Platz":[40.5,49.5],"Bahnhof Altstetten Nord":[24.5,44.0],"Albisrieden":[8.5,60.5],"Triemli":[15.0,69.5],"Stauffacher":[42.0,64.0],"Paradeplatz":[51.0,69.0],"Central":[56.5,58.5],"Bellevue":[54.5,73.0],"Bahnhof Stadelhofen":[61.0,72.0],"Bahnhof Enge":[43.0,69.0],"Laubegg":[37.0,79.5],"Klusplatz":[72.5,67.0],"Rehalp":[79.5,78.0],"Bahnhof Tiefenbrunnen":[74.5,88.5],"Wollishoferplatz":[35.5,89.0],"Hirzenbach":[88.5,31.5],"Bahnhof Stettbach":[90.0,41.5],"Zoo":[84.0,52.5],"Frankental":[25.0,27.5],"Geissweid":[5.5,41.5]};
+const HOTSPOTS={"Zürich Flughafen":[72.0,5.0],"Seebach":[68.0,11.5],"Auzelg":[79.0,18.0],"Bahnhof Oerlikon":[65.5,23.0],"Milchbuck":[55.1,40.0],"Bucheggplatz":[52.0,43.5],"Escher-Wyss-Platz":[40.5,49.5],"Bahnhof Altstetten Nord":[24.5,44.0],"Albisrieden":[8.5,60.5],"Triemli":[15.0,69.5],"Stauffacher":[42.0,64.0],"Paradeplatz":[51.0,69.0],"Central":[56.5,58.5],"Bellevue":[54.5,73.0],"Bahnhof Stadelhofen":[61.0,72.0],"Bahnhof Enge":[43.0,69.0],"Laubegg":[37.0,79.5],"Klusplatz":[72.5,67.0],"Rehalp":[79.5,78.0],"Bahnhof Tiefenbrunnen":[74.5,88.5],"Wollishoferplatz":[35.5,89.0],"Hirzenbach":[88.5,31.5],"Bahnhof Stettbach":[90.0,41.5],"Zoo":[83.0,54.8],"Frankental":[25.0,27.5],"Geissweid":[7.8,39.4],"Römerhof":[67.1,64.3],"Goldbrunnenplatz":[38.4,68.2],"Albisgüetli":[20.8,88.5],"Hardturm":[29.1,39.8],"Balgrist":[83.0,81.0],"Hegibachplatz":[72.8,76.8],"Bahnhof Selnau":[48.0,67.2],"Bahnhof Wiedikon":[39.6,66.1],"Hardplatz":[35.0,53.0],"Albisriederplatz":[27.8,55.0],"Letzigrund":[22.7,53.9],"Helvetiaplatz":[43.5,62.2],"Hottingerplatz":[65.4,66.8],"Universität Irchel":[65.4,36.5],"ETH/Universitätsspital":[65.7,59.1],"Sihlquai/HB":[49.8,54.2],"Limmatplatz":[44.8,50.2],"Haldenegg":[59.0,54.3],"Bezirksgebäude":[37.5,62.7]};
 const MAP_STOPS=Object.keys(HOTSPOTS);
 const MARKED_NODES=["Zürich Flughafen", "Bahnhof Oerlikon", "Milchbuck", "Schaffhauserplatz", "Bucheggplatz", "Escher-Wyss-Platz", "Limmatplatz", "Sihlquai/HB", "Bahnhofplatz/HB", "Bahnhofstrasse/HB", "Central", "Paradeplatz", "Stauffacher", "Bahnhof Enge", "Bürkliplatz", "Bellevue", "Bahnhof Stadelhofen", "Kreuzplatz", "Römerhof", "Goldbrunnenplatz", "Albisriederplatz", "Bahnhof Altstetten Nord", "Bahnhof Hardbrücke", "Bahnhof Stettbach"];
+const IMPORTANT_NODES_BY_LINE={"2":["Stauffacher","Paradeplatz","Bellevue","Bahnhof Stadelhofen"],"3":["Albisriederplatz","Stauffacher","Bahnhofplatz/HB","Central","Römerhof"],"4":["Bellevue","Bahnhof Stadelhofen","Central","Bahnhofstrasse/HB"],"5":["Bahnhof Enge","Paradeplatz","Bürkliplatz","Bellevue","Bahnhof Stadelhofen"],"6":["ETH/Universitätsspital","Central","Bahnhofplatz/HB"],"7":["Bahnhof Stettbach","Milchbuck","Schaffhauserplatz","Central","Bahnhofstrasse/HB","Paradeplatz","Bahnhof Enge"],"8":["Escher-Wyss-Platz","Bahnhof Hardbrücke","Stauffacher","Bahnhof Enge","Bürkliplatz","Bellevue"],"9":["Milchbuck","ETH/Universitätsspital","Bellevue","Bürkliplatz","Paradeplatz","Stauffacher","Goldbrunnenplatz"],"10":["Zürich Flughafen","Bahnhof Oerlikon","Milchbuck","ETH/Universitätsspital","Central","Bahnhofplatz/HB"],"11":["Central","Bahnhofstrasse/HB","Paradeplatz","Bürkliplatz","Bellevue"],"12":["Zürich Flughafen","Bahnhof Wallisellen","Bahnhof Stettbach"],"13":["Bahnhof Enge","Paradeplatz","Bahnhofstrasse/HB"],"14":["Triemli","Goldbrunnenplatz","Stauffacher","Bahnhofplatz/HB"],"15":["Bellevue","Central","Bahnhof Tiefenbrunnen"],"16":["Bahnhof Enge/Bederstrasse","Paradeplatz","Bahnhofstrasse/HB","Central","Schaffhauserplatz","Milchbuck"],"17":["Escher-Wyss-Platz","Limmatplatz","Sihlquai/HB","Schaffhauserplatz","Bucheggplatz"],"50":["Bahnhof Oerlikon","Bucheggplatz","Schaffhauserplatz","Sihlquai/HB","Limmatplatz","Escher-Wyss-Platz","Frankental"],"51":["Bahnhof Altstetten Nord","Escher-Wyss-Platz","Limmatplatz","Sihlquai/HB","Schaffhauserplatz","Milchbuck","Bahnhof Oerlikon Ost","Seebach"]};
 const LINES=Object.keys(ROUTES);
 let mode='stop',score=0,attempts=0,streak=0,current=null,examLeft=10,examScore=0;
 let mistakes=[];
@@ -78,6 +79,7 @@ function next(){
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
   if(mode==='stop')qStop();
   else if(mode==='ends')qEnds();
+  else if(mode==='nodes')qNodes();
   else if(mode==='next')qNext();
   else if(mode==='repeat')qRepeat();
   else if(mode==='mapquiz')qMapQuiz();
@@ -151,37 +153,29 @@ function qStop(q=null){let stop=q?.stop||sample(IMPORTANT.filter(s=>linesAt(s).l
 quiz.innerHTML=`<div class="kicker">Mehrfachauswahl</div><div class="question">Welche Tramlinien halten am <strong>${stop}</strong>?</div><div class="sub">Alle passenden Linien wählen.</div>
 <div class="pills">${LINES.map(l=>`<button class="pill" data-line="${l}" onclick="this.classList.toggle('sel')">${badge(l)}</button>`).join('')}</div>
 <div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div><button class="btn primary" onclick="checkStop()">Prüfen</button></div>`}
-function checkStop(){let s=[...document.querySelectorAll('.pill.sel')].map(x=>x.dataset.line).sort((a,b)=>Number(a)-Number(b));let c=[...current.correct].sort((a,b)=>Number(a)-Number(b));let ok=JSON.stringify(s)===JSON.stringify(c);register(ok,current);showFb(ok,`Richtig: ${c.map(badge).join(' ')}`)}
+function checkStop(){let s=[...document.querySelectorAll('.pill.sel')].map(x=>x.dataset.line).sort();let c=[...current.correct].sort();let ok=JSON.stringify(s)===JSON.stringify(c);register(ok,current);showFb(ok,`Richtig: ${c.map(badge).join(' ')}`)}
+
 
 function displayNodeName(s){
-  return s
-    .replace(/^Zürich,\s*/,'')
-    .replace(/^Zürich\s+/,'')
-    .replace(/,\s*Bahnhof$/,' Bahnhof');
-}
-
-function markedNodesForLine(line){
-  const r=ROUTES[line]||[];
-  return MARKED_NODES.filter(node=>r.some(stop=>same(stop,node)));
+  return s.replace(/^Zürich,\s*/,'').replace(/^Zürich\s+/,'');
 }
 
 function qNodes(q=null){
-  const eligible=LINES.filter(l=>markedNodesForLine(l).length>=2);
+  const eligible=LINES.filter(l=>IMPORTANT_NODES_BY_LINE[l] && IMPORTANT_NODES_BY_LINE[l].length);
   const line=q?.line||sample(eligible);
-  const correct=markedNodesForLine(line);
+  const correct=IMPORTANT_NODES_BY_LINE[line];
 
-  // Mix correct nodes with plausible distractors from the same master list.
-  const distractors=shuffle(
-    MARKED_NODES.filter(n=>!correct.some(c=>same(c,n)))
-  ).slice(0, Math.min(5, Math.max(3, 8-correct.length)));
-
+  const allNodes=[...new Set(Object.values(IMPORTANT_NODES_BY_LINE).flat())];
+  const distractors=shuffle(allNodes.filter(n=>!correct.includes(n)))
+    .slice(0, Math.max(3, Math.min(5, 9-correct.length)));
   const choices=shuffle([...correct,...distractors]);
+
   current={type:'nodes',line,correct};
 
   quiz.innerHTML=`
-    <div class="kicker">Markante Knotenpunkte</div>
-    <div class="question">Welche markanten Knotenpunkte liegen auf TRAM ${badge(line)}?</div>
-    <div class="sub">Wähle alle passenden Knotenpunkte dieser Linie.</div>
+    <div class="kicker">Wichtige Knotenpunkte</div>
+    <div class="question">Welche wichtigen Knotenpunkte befinden sich auf Linie ${badge(line)}?</div>
+    <div class="sub">Wähle alle passenden Knotenpunkte.</div>
     <div class="pills">
       ${choices.map((n,i)=>`<button class="pill nodepill" data-node="${i}" data-name="${encodeURIComponent(n)}" onclick="this.classList.toggle('sel')">${displayNodeName(n)}</button>`).join('')}
     </div>
@@ -200,14 +194,14 @@ function checkNodes(){
   const selected=[...document.querySelectorAll('.nodepill.sel')]
     .map(x=>decodeURIComponent(x.dataset.name));
 
-  const s=[...selected].sort((a,b)=>Number(a)-Number(b));
-  const c=[...current.correct].sort((a,b)=>Number(a)-Number(b));
+  const s=[...selected].sort((a,b)=>a.localeCompare(b));
+  const c=[...current.correct].sort((a,b)=>a.localeCompare(b));
   const ok=JSON.stringify(s)===JSON.stringify(c);
   register(ok,current);
 
   document.querySelectorAll('.nodepill').forEach(el=>{
     const n=decodeURIComponent(el.dataset.name);
-    const isCorrect=current.correct.some(cn=>same(cn,n));
+    const isCorrect=current.correct.includes(n);
     const isSelected=el.classList.contains('sel');
     if(isCorrect) el.classList.add('correct');
     if(isSelected && !isCorrect) el.classList.add('wrong');
@@ -216,8 +210,8 @@ function checkNodes(){
   const f=document.getElementById('fb');
   f.className='feedback '+(ok?'ok':'bad');
   f.innerHTML=ok
-    ? `Richtig. Markante Knotenpunkte: <b>${current.correct.map(displayNodeName).join(' · ')}</b>`
-    : `Richtig wären: <b>${current.correct.map(displayNodeName).join(' · ')}</b>`;
+    ? `Richtig: <b>${current.correct.map(displayNodeName).join(' · ')}</b>`
+    : `Richtig sind: <b>${current.correct.map(displayNodeName).join(' · ')}</b>`;
 }
 
 function qEnds(q=null){let l=q?.line||sample(LINES),r=ROUTES[l],ans=`${r[0]} ↔ ${r.at(-1)}`;let opts=shuffle([ans,...shuffle(LINES.filter(x=>x!==l)).slice(0,3).map(x=>`${ROUTES[x][0]} ↔ ${ROUTES[x].at(-1)}`)]);current={type:'ends',line:l,answer:ans};single(`TRAM ${badge(l)}`,`Welche Endpunkte gehören zu dieser Linie?`,opts,ans)}
