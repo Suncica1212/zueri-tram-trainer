@@ -151,7 +151,7 @@ function qStop(q=null){let stop=q?.stop||sample(IMPORTANT.filter(s=>linesAt(s).l
 quiz.innerHTML=`<div class="kicker">Mehrfachauswahl</div><div class="question">Welche Tramlinien halten am <strong>${stop}</strong>?</div><div class="sub">Alle passenden Linien wählen.</div>
 <div class="pills">${LINES.map(l=>`<button class="pill" data-line="${l}" onclick="this.classList.toggle('sel')">${badge(l)}</button>`).join('')}</div>
 <div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div><button class="btn primary" onclick="checkStop()">Prüfen</button></div>`}
-function checkStop(){let s=[...document.querySelectorAll('.pill.sel')].map(x=>x.dataset.line).sort();let c=[...current.correct].sort();let ok=JSON.stringify(s)===JSON.stringify(c);register(ok,current);showFb(ok,`Richtig: ${c.map(badge).join(' ')}`)}
+function checkStop(){let s=[...document.querySelectorAll('.pill.sel')].map(x=>x.dataset.line).sort((a,b)=>Number(a)-Number(b));let c=[...current.correct].sort((a,b)=>Number(a)-Number(b));let ok=JSON.stringify(s)===JSON.stringify(c);register(ok,current);showFb(ok,`Richtig: ${c.map(badge).join(' ')}`)}
 
 function displayNodeName(s){
   return s
@@ -200,8 +200,8 @@ function checkNodes(){
   const selected=[...document.querySelectorAll('.nodepill.sel')]
     .map(x=>decodeURIComponent(x.dataset.name));
 
-  const s=[...selected].sort((a,b)=>a.localeCompare(b));
-  const c=[...current.correct].sort((a,b)=>a.localeCompare(b));
+  const s=[...selected].sort((a,b)=>Number(a)-Number(b));
+  const c=[...current.correct].sort((a,b)=>Number(a)-Number(b));
   const ok=JSON.stringify(s)===JSON.stringify(c);
   register(ok,current);
 
