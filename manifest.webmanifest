@@ -1,0 +1,21 @@
+{
+  "name": "Züri Tram Trainer 2026",
+  "short_name": "Tram Trainer",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f6f8",
+  "theme_color": "#0a64b7",
+  "description": "Private Lern-App für Zürcher Tramlinien 2026 inkl. Linie 16, 50 und 51",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
