@@ -24,7 +24,7 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 .options{display:grid;gap:9px} .option{padding:13px 14px;text-align:left;font-size:16px} .option.correct{background:#e8f7ef;border-color:#77c89e} .option.wrong{background:#fff0f0;border-color:#e6a0a3}
 .pills{display:flex;flex-wrap:wrap;gap:8px} .pill{display:flex;align-items:center;gap:8px;padding:7px 10px;font-weight:750} .pill.sel{outline:none}.pill.sel .badge{background:#0a64b7;color:#fff;border-color:#0a64b7}
 .badge{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#0a64b7;background:#fff;border:2px solid #0a64b7;font-weight:900;flex:none;box-shadow:none}
-.controls{display:flex;gap:9px;justify-content:space-between;align-items:center;margin-top:17px;flex-wrap:wrap} .btn{padding:12px 14px;font-weight:800} .btn.primary{background:var(--blue);color:white;border-color:var(--blue)}
+.controls{display:flex;gap:9px;justify-content:space-between;align-items:center;margin-top:17px;flex-wrap:wrap}.control-left{display:flex;gap:9px;align-items:center;flex-wrap:wrap} .btn{padding:12px 14px;font-weight:800} .btn.primary{background:var(--blue);color:white;border-color:var(--blue)}
 .feedback{margin-top:14px;padding:12px;border-radius:12px;display:none} .feedback.ok{display:block;background:#e8f7ef;color:#075c32} .feedback.bad{display:block;background:#fff0f0;color:#8d171b}
 .route{background:#eef5fb;padding:14px;border-radius:14px;line-height:1.65;margin-top:10px}
 .footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 8px}
@@ -73,10 +73,16 @@ function same(a,b){let A=norm(a),B=norm(b);if(A===B)return true;if(A.includes(B)
 function linesAt(stop){return LINES.filter(l=>ROUTES[l].some(s=>same(s,stop)))}
 function register(ok,q){attempts++;if(ok){score++;streak++;}else{streak=0;if(q)mistakes.push(q)}save()}
 function next(){
-
-function skipQuestion(){
-  next();
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+  if(mode==='stop')qStop();
+  else if(mode==='ends')qEnds();
+  else if(mode==='next')qNext();
+  else if(mode==='repeat')qRepeat();
+  else if(mode==='mapquiz')qMapQuiz();
+  else if(mode==='map')qMap();
+  else qExam();
 }
+function skipQuestion(){ next(); }
 
 function qMapQuiz(q=null){
   const stop=q?.stop||sample(MAP_STOPS);
@@ -89,7 +95,7 @@ function qMapQuiz(q=null){
       <img src="tramnetz-quiz-ohne-ortschaften.png" alt="Tramliniennetz Zürich 2026 – Quizkarte">
     </div>
     <div id="fb" class="feedback"></div>
-    <div class="controls"><button class="btn" onclick="skipQuestion()">Überspringen →</button></div>`;
+    <div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div></div>`;
 }
 
 function mapPick(ev){
@@ -116,7 +122,7 @@ function mapPick(ev){
                  : `Nicht ganz. Der <b>grüne Punkt</b> zeigt <b>${current.stop}</b>.`;
 
   document.querySelector('.controls').innerHTML=
-    '<button class="btn primary" onclick="skipQuestion()">Nächste Frage →</button>';
+    '<div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div>';
 }
 
 function qMap(){
@@ -129,75 +135,19 @@ function qMap(){
     Laubegg – Saalsporthalle – Sihlcity Nord – Waffenplatzstrasse – Bahnhof Enge/Bederstrasse – Tunnelstrasse – Stockerstrasse – Paradeplatz – Rennweg – Bahnhofstrasse/HB – Central – Haldenegg – Sonneggstrasse – Ottikerstrasse – Röslistrasse – Schaffhauserplatz – Guggachstrasse – Milchbuck</div>`;
 }
 
-document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode)); if(mode==='stop')qStop();else if(mode==='ends')qEnds();else if(mode==='next')qNext();else if(mode==='repeat')qRepeat();else if(mode==='mapquiz')qMapQuiz();else if(mode==='map')qMap();else qExam()}
 function qStop(q=null){let stop=q?.stop||sample(IMPORTANT.filter(s=>linesAt(s).length));let correct=linesAt(stop);current={type:'stop',stop,correct};
 quiz.innerHTML=`<div class="kicker">Mehrfachauswahl</div><div class="question">Welche Tramlinien halten am <strong>${stop}</strong>?</div><div class="sub">Alle passenden Linien wählen.</div>
 <div class="pills">${LINES.map(l=>`<button class="pill" data-line="${l}" onclick="this.classList.toggle('sel')">${badge(l)}</button>`).join('')}</div>
-<div id="fb" class="feedback"></div><div class="controls"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn primary" onclick="checkStop()">Prüfen</button></div>`}
+<div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div><button class="btn primary" onclick="checkStop()">Prüfen</button></div>`}
 function checkStop(){let s=[...document.querySelectorAll('.pill.sel')].map(x=>x.dataset.line).sort();let c=[...current.correct].sort();let ok=JSON.stringify(s)===JSON.stringify(c);register(ok,current);showFb(ok,`Richtig: ${c.map(badge).join(' ')}`)}
 function qEnds(q=null){let l=q?.line||sample(LINES),r=ROUTES[l],ans=`${r[0]} ↔ ${r.at(-1)}`;let opts=shuffle([ans,...shuffle(LINES.filter(x=>x!==l)).slice(0,3).map(x=>`${ROUTES[x][0]} ↔ ${ROUTES[x].at(-1)}`)]);current={type:'ends',line:l,answer:ans};single(`TRAM ${badge(l)}`,`Welche Endpunkte gehören zu dieser Linie?`,opts,ans)}
 function qNext(q=null){let l=q?.line||sample(LINES),r=ROUTES[l],i=q?.i??Math.floor(Math.random()*(r.length-1)),ans=r[i+1];let pool=[...new Set(Object.values(ROUTES).flat())].filter(x=>x!==ans&&x!==r[i]);let opts=shuffle([ans,...shuffle(pool).slice(0,3)]);current={type:'next',line:l,i,answer:ans};single(`TRAM ${badge(l)}`,`Was kommt Richtung <strong>${r.at(-1)}</strong> direkt nach <strong>${r[i]}</strong>?`,opts,ans)}
-function single(k,q,opts,ans){quiz.innerHTML=`<div class="kicker">${k}</div><div class="question">${q}</div><div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(ans)})'>${o}</button>`).join('')}</div><div id="fb" class="feedback"></div><div class="controls"><button class="btn" onclick="skipQuestion()">Überspringen →</button></div>`}
+function single(k,q,opts,ans){quiz.innerHTML=`<div class="kicker">${k}</div><div class="question">${q}</div><div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(ans)})'>${o}</button>`).join('')}</div><div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div></div>`}
 function choose(el,val,ans){if(document.querySelector('.option.correct,.option.wrong'))return;let ok=val===ans;register(ok,current);el.classList.add(ok?'correct':'wrong');[...document.querySelectorAll('.option')].forEach(x=>{if(x.textContent===ans)x.classList.add('correct')});showFb(ok,`Richtig: <b>${ans}</b>`)}
 function showFb(ok,text){let f=document.getElementById('fb');f.className='feedback '+(ok?'ok':'bad');f.innerHTML=ok?text:`Noch nicht. ${text}`}
 function qRepeat(){if(!mistakes.length){quiz.innerHTML=`<div class="question">Keine offenen Fehler 🎉</div><div class="sub">Falsch beantwortete Fragen landen automatisch hier.</div>`;return}let q=mistakes.shift();save();if(q.type==='stop')qStop(q);else if(q.type==='ends')qEnds(q);else if(q.type==='mapquiz')qMapQuiz(q);else qNext(q)}
 function qExam(){if(examLeft<=0){quiz.innerHTML=`<div class="kicker">Prüfung beendet</div><div class="question">${examScore} / 10 richtig</div><div class="sub">Starte eine neue 10-Fragen-Prüfung.</div><button class="btn primary" onclick="examLeft=10;examScore=0;qExam()">Neue Prüfung</button>`;return}let t=sample(['ends','next']);let old=mode;mode=t;let before=score; if(t==='ends')qEnds();else qNext(); let oldChoose=window.choose; window.choose=function(el,val,ans){if(document.querySelector('.option.correct,.option.wrong'))return;let ok=val===ans;if(ok)examScore++;examLeft--;oldChoose(el,val,ans);setTimeout(()=>{mode='exam';qExam()},650)}}
 
-
-function skipQuestion(){
-  next();
-}
-
-function qMapQuiz(q=null){
-  const stop=q?.stop||sample(MAP_STOPS);
-  current={type:'mapquiz',stop};
-  quiz.innerHTML=`
-    <div class="kicker">Karten-Quiz</div>
-    <div class="question">Wo befindet sich <strong>${stop}</strong>?</div>
-    <div class="sub">Tippe möglichst genau auf die Haltestelle. Überspringen zählt nicht als Fehler.</div>
-    <div id="mapwrap" class="mapwrap" onclick="mapPick(event)">
-      <img src="tramnetz-quiz-ohne-ortschaften.png" alt="Tramliniennetz Zürich 2026 – Quizkarte">
-    </div>
-    <div id="fb" class="feedback"></div>
-    <div class="controls"><button class="btn" onclick="skipQuestion()">Überspringen →</button></div>`;
-}
-
-function mapPick(ev){
-  if(current?.answered) return;
-  const wrap=document.getElementById('mapwrap');
-  const rect=wrap.getBoundingClientRect();
-  const x=((ev.clientX-rect.left)/rect.width)*100;
-  const y=((ev.clientY-rect.top)/rect.height)*100;
-  const [tx,ty]=HOTSPOTS[current.stop];
-  const dist=Math.hypot(x-tx,y-ty);
-  const ok=dist<=5.0;
-  current.answered=true;
-  register(ok,current);
-
-  const marker=document.createElement('div');
-  marker.className='mapmarker '+(ok?'pick':'answer');
-  marker.style.left=(ok?x:tx)+'%';
-  marker.style.top=(ok?y:ty)+'%';
-  wrap.appendChild(marker);
-
-  const f=document.getElementById('fb');
-  f.className='feedback '+(ok?'ok':'bad');
-  f.innerHTML=ok ? `Treffer! <b>${current.stop}</b>.`
-                 : `Nicht ganz. Der <b>grüne Punkt</b> zeigt <b>${current.stop}</b>.`;
-
-  document.querySelector('.controls').innerHTML=
-    '<button class="btn primary" onclick="skipQuestion()">Nächste Frage →</button>';
-}
-
-function qMap(){
-  quiz.innerHTML=`
-    <div class="kicker">Tramlinien 2026</div>
-    <div class="question">Liniennetz</div>
-    <div class="sub">Nur Tramlinien – inklusive der temporären Linie 16 sowie der Baustellenlinien 50 und 51.</div>
-    <img src="tramnetz-2026.png" alt="VBZ Tramliniennetz 2026" style="width:100%;height:auto;border-radius:14px;border:1px solid var(--line);background:white">
-    <div class="route"><strong>Neu:</strong> ${badge('16')} Laubegg ↔ Milchbuck<br>
-    Laubegg – Saalsporthalle – Sihlcity Nord – Waffenplatzstrasse – Bahnhof Enge/Bederstrasse – Tunnelstrasse – Stockerstrasse – Paradeplatz – Rennweg – Bahnhofstrasse/HB – Central – Haldenegg – Sonneggstrasse – Ottikerstrasse – Röslistrasse – Schaffhauserplatz – Guggachstrasse – Milchbuck</div>`;
-}
 
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;if(mode==='exam'){examLeft=10;examScore=0}next()});
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
