@@ -37,12 +37,10 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 .mapmarker.pick{background:#0a64b7}
 .mapmarker.answer{background:#0a9b52}
 .mapmarker.wrong{background:#c62f35}
-.mapskip{margin-left:auto}
-
 </style>
 </head>
 <body><div class="app">
-<header><div class="kicker" style="color:#d9edff">Private Lern-App</div><h1>Züri Tram Trainer</h1><p>2026 · inkl. Linien 16, 50 & 51</p>
+<header><div class="kicker" style="color:#d9edff">Private Lern-App</div><h1>Züri Tram Trainer</h1><p>2026 · inkl. Baustellenlinien 50 & 51</p>
 <div class="stats"><div class="stat"><b id="score">0</b>richtig</div><div class="stat"><b id="attempts">0</b>Fragen</div><div class="stat"><b id="streak">0</b>Serie</div></div></header>
 <div id="installHint" class="install"><b>📱 Auf dem iPhone installieren</b>Diese Seite in Safari öffnen → Teilen → <strong>Zum Home-Bildschirm</strong>. Danach startet sie wie eine App und funktioniert nach dem ersten Laden auch offline.</div>
 <div class="tabs">
@@ -55,15 +53,15 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 <button class="tab" data-mode="map">Liniennetz</button>
 </div>
 <main class="card"><div id="quiz"></div></main>
-<div class="footer">Private Lernhilfe · dynamische Fragen · nicht offiziell von VBZ/ZVV.</div>
+<div class="footer">Private Lernhilfe · nicht offiziell von VBZ/ZVV.</div>
 </div>
 <script>
 const ROUTES={"2": ["Schlieren, Geissweid", "Schlieren Zentrum/Bahnhof", "Wagonsfabrik", "Gasometerbrücke", "Micafil", "Bahnhof Altstetten", "Lindenplatz", "Bachmattstrasse", "Farbhof", "Kappeli", "Freihofstrasse", "Letzigrund", "Albisriederplatz", "Zypressenstrasse", "Lochergut", "Stauffacher", "Sihlstrasse", "Paradeplatz", "Bürkliplatz", "Bellevue", "Bahnhof Stadelhofen", "Kreuzplatz", "Hegibachplatz", "Klusplatz"], "3": ["Albisrieden", "Albisriederdörfli", "Hubertus", "Albisriederplatz", "Zypressenstrasse", "Lochergut", "Stauffacher", "Sihlpost/HB", "Bahnhofplatz/HB", "Central", "Rudolf-Brun-Brücke", "Rathaus", "Kunsthaus", "Hottingerplatz", "Römerhof", "Klusplatz"], "4": ["Bahnhof Altstetten Nord", "Vulkanstrasse", "Toni-Areal", "Technopark", "Schiffbau", "Escher-Wyss-Platz", "Limmatplatz", "Museum für Gestaltung", "Sihlquai/HB", "Bahnhofquai/HB", "Central", "Rathaus", "Helmhaus", "Bellevue", "Bahnhof Stadelhofen", "Kreuzstrasse", "Feldeggstrasse", "Höschgasse", "Fröhlichstrasse", "Wildbachstrasse", "Bahnhof Tiefenbrunnen"], "5": ["Laubegg", "Uetlihof", "Strassenverkehrsamt", "Schmiede Wiedikon", "Bahnhof Wiedikon", "Bahnhof Enge/Bederstrasse", "Bahnhof Enge", "Rentenanstalt", "Bürkliplatz", "Bellevue", "Kunsthaus", "Kantonsschule", "Platte", "Voltastrasse", "Kirche Fluntern"], "6": ["Werdhölzli", "Bändliweg", "Tüffenwies", "Hardhof", "Fischerweg", "Bernoulli-Häuser", "Hardturm", "Escher-Wyss-Platz", "Limmatplatz", "Museum für Gestaltung", "Sihlquai/HB", "Bahnhofquai/HB", "Central", "ETH/Universitätsspital", "Platte", "Voltastrasse", "Kirche Fluntern", "Zoo"], "7": ["Wollishoferplatz", "Bahnhof Wollishofen", "Morgental", "Brunaustrasse", "Museum Rietberg", "Bahnhof Enge", "Stockerstrasse", "Paradeplatz", "Bahnhofstrasse/HB", "Central", "Haldenegg", "Schaffhauserplatz", "Milchbuck", "Universität Irchel", "Salersteig", "Schwamendingerplatz", "Probstei", "Glattwiesen", "Roswiesen", "Hirzenbach", "Bahnhof Stettbach"], "8": ["Hardturm", "Fischerweg", "Bernoulli-Häuser", "Escher-Wyss-Platz", "Schiffbau", "Bahnhof Hardbrücke", "Hardplatz", "Helvetiaplatz", "Stauffacher", "Sihlstrasse", "Paradeplatz", "Bürkliplatz", "Bellevue", "Bahnhof Stadelhofen", "Kreuzplatz", "Römerhof", "Klusplatz"], "9": ["Hirzenbach", "Roswiesen", "Glattwiesen", "Probstei", "Schwamendingerplatz", "Milchbuck", "Langmauerstrasse", "Universität Irchel", "Haldenbach", "ETH/Universitätsspital", "Kunsthaus", "Bellevue", "Bürkliplatz", "Paradeplatz", "Sihlstrasse", "Stauffacher", "Goldbrunnenplatz", "Talwiesenstrasse", "Heuried", "Triemli"], "10": ["Zürich Flughafen", "Zürich Flughafen Fracht", "Kloten Balsberg", "Glattbrugg Bahnhof", "Lindberghplatz", "Glattpark", "Fernsehstudio", "Leutschenbach", "Bahnhof Oerlikon Ost", "Bahnhof Oerlikon", "Sternen Oerlikon", "Berninaplatz", "Milchbuck", "Universität Irchel", "ETH/Universitätsspital", "Central", "Bahnhofplatz/HB"], "11": ["Auzelg", "Fernsehstudio", "Leutschenbach", "Bahnhof Oerlikon Ost", "Bahnhof Oerlikon", "Sternen Oerlikon", "Berninaplatz", "Milchbuck", "Schaffhauserplatz", "Haldenegg", "Bahnhofquai/HB", "Bahnhofstrasse/HB", "Paradeplatz", "Bürkliplatz", "Bellevue", "Bahnhof Stadelhofen", "Kreuzplatz", "Hegibachplatz", "Burgwies", "Balgrist", "Rehalp"], "12": ["Zürich Flughafen", "Zürich Flughafen Fracht", "Kloten Balsberg", "Glattbrugg Bahnhof", "Lindberghplatz", "Glattpark", "Auzelg", "Wallisellen Bahnhof", "Neugut", "Glatt", "Altried", "Bahnhof Stettbach"], "13": ["Frankental", "Meierhofplatz", "Schwert", "Waidfussweg", "Escher-Wyss-Platz", "Limmatplatz", "Museum für Gestaltung", "Sihlquai/HB", "Bahnhofquai/HB", "Bahnhofstrasse/HB", "Paradeplatz", "Stockerstrasse", "Bahnhof Enge", "Waffenplatzstrasse", "Sihlcity Nord", "Laubegg", "Uetlihof", "Strassenverkehrsamt", "Albisgütli"], "14": ["Seebach", "Seebacherplatz", "Felsenrainstrasse", "Bahnhof Oerlikon", "Sternen Oerlikon", "Berninaplatz", "Milchbuck", "Schaffhauserplatz", "Haldenegg", "Bahnhofquai/HB", "Bahnhofplatz/HB", "Sihlpost/HB", "Stauffacher", "Kalkbreite/Bahnhof Wiedikon", "Goldbrunnenplatz", "Talwiesenstrasse", "Heuried", "Triemli"], "15": ["Bucheggplatz", "Röslistrasse", "Kronenstrasse", "Schaffhauserplatz", "Haldenegg", "Central", "Rudolf-Brun-Brücke", "Rathaus", "Helmhaus", "Bellevue", "Kunsthaus", "Hottingerplatz", "Römerhof", "Klusplatz"], "16": ["Laubegg", "Saalsporthalle", "Sihlcity Nord", "Waffenplatzstrasse", "Zürich Enge, Bahnhof/Bederstr.", "Tunnelstrasse", "Stockerstrasse", "Paradeplatz", "Rennweg", "Bahnhofstrasse/HB", "Central", "Haldenegg", "Sonneggstrasse", "Ottikerstrasse", "Röslistrasse", "Schaffhauserplatz", "Guggachstrasse", "Milchbuck"], "17": ["Werdhölzli", "Bändliweg", "Tüffenwies", "Hardturm", "Escher-Wyss-Platz", "Limmatplatz", "Museum für Gestaltung", "Sihlquai/HB", "Bahnhofquai/HB", "Bahnhofstrasse/HB", "Paradeplatz", "Stockerstrasse", "Bahnhof Enge", "Waffenplatzstrasse", "Sihlcity Nord", "Laubegg", "Uetlihof", "Strassenverkehrsamt", "Albisgütli"], "50": ["Auzelg", "Fernsehstudio", "Glattpark", "Oerlikerhus", "Leutschenbach", "Messe/Hallenstadion", "Sternen Oerlikon", "Bahnhof Oerlikon", "Regensbergbrücke", "Bad Allenmoos", "Brunnenhof", "Bucheggplatz", "Laubiweg", "Schaffhauserplatz", "Kronenstrasse", "Beckenhof", "Stampfenbachplatz", "Sihlquai/HB", "Museum für Gestaltung", "Limmatplatz", "Quellenstrasse", "Löwenbräu", "Escher-Wyss-Platz", "Wipkingerplatz", "Waidfussweg", "Eschergutweg", "Alte Trotte", "Schwert", "Meierhofplatz", "Zwielplatz", "Wartau", "Winzerstrasse", "Frankental"], "51": ["Seebach", "Seebacherplatz", "Felsenrainstrasse", "Bahnhof Oerlikon Ost", "Sternen Oerlikon", "Salersteig", "Berninaplatz", "Hirschwiesenstrasse", "Milchbuck", "Guggachstrasse", "Schaffhauserplatz", "Kronenstrasse", "Beckenhof", "Stampfenbachplatz", "Sihlquai/HB", "Museum für Gestaltung", "Limmatplatz", "Quellenstrasse", "Löwenbräu", "Escher-Wyss-Platz", "Schiffbau", "Technopark", "Toni-Areal", "Sportweg", "Aargauerstrasse", "Würzgraben", "Bahnhof Altstetten Nord"]};
 const COLORS={"2": "#D71920", "3": "#83B81A", "4": "#005CA9", "5": "#7A4A21", "6": "#8A2A2B", "7": "#111111", "8": "#69A82F", "9": "#17458F", "10": "#E779A8", "11": "#56A63C", "12": "#79C7E3", "13": "#F2A100", "14": "#7CB9D8", "15": "#B1428C", "16": "#007C91", "17": "#8B1F35", "50": "#8B1F35", "51": "#005CA9"};
 const TEXTCOLORS={"13": "#111111", "12": "#111111", "14": "#111111", "10": "#111111"};
+const IMPORTANT=["Römerhof", "Goldbrunnenplatz", "Escher-Wyss-Platz", "Bahnhof Enge", "Bürkliplatz", "Paradeplatz", "Bahnhofstrasse/HB", "Central", "Bellevue", "Bahnhof Stadelhofen", "Stauffacher", "Milchbuck", "Bahnhof Oerlikon", "Zürich Flughafen"];
 const HOTSPOTS={"Zürich Flughafen": [69.2, 30.4], "Seebach": [65.3, 36.8], "Auzelg": [75.2, 45.0], "Bahnhof Oerlikon": [61.6, 43.8], "Milchbuck": [56.8, 54.2], "Bucheggplatz": [48.2, 54.6], "Escher-Wyss-Platz": [43.6, 62.0], "Bahnhof Altstetten Nord": [27.3, 59.3], "Albisrieden": [13.5, 70.9], "Triemli": [18.5, 74.6], "Stauffacher": [43.3, 72.1], "Paradeplatz": [50.2, 76.2], "Central": [55.5, 69.3], "Bellevue": [55.2, 78.4], "Bahnhof Stadelhofen": [62.0, 75.0], "Bahnhof Enge": [47.6, 79.6], "Laubegg": [35.2, 86.5], "Klusplatz": [73.8, 75.0], "Rehalp": [80.0, 84.0], "Bahnhof Tiefenbrunnen": [69.0, 91.1], "Wollishoferplatz": [36.0, 96.8], "Hirzenbach": [82.3, 51.0], "Bahnhof Stettbach": [82.1, 57.9], "Zoo": [79.1, 63.4], "Frankental": [28.4, 46.1], "Geissweid": [11.0, 56.7]};
 const MAP_STOPS=Object.keys(HOTSPOTS);
-const IMPORTANT=["Römerhof", "Goldbrunnenplatz", "Escher-Wyss-Platz", "Bahnhof Enge", "Bürkliplatz", "Paradeplatz", "Bahnhofstrasse/HB", "Central", "Bellevue", "Bahnhof Stadelhofen", "Stauffacher", "Milchbuck", "Bahnhof Oerlikon", "Zürich Flughafen"];
 const LINES=Object.keys(ROUTES);
 let mode='stop',score=0,attempts=0,streak=0,current=null,examLeft=10,examScore=0;
 let mistakes=[];
@@ -79,7 +77,6 @@ function register(ok,q){attempts++;if(ok){score++;streak++;}else{streak=0;if(q)m
 function next(){
 
 function skipQuestion(){
-  // Skipping never changes score, attempts, streak or mistake list.
   next();
 }
 
@@ -89,9 +86,9 @@ function qMapQuiz(q=null){
   quiz.innerHTML=`
     <div class="kicker">Karten-Quiz</div>
     <div class="question">Wo befindet sich <strong>${stop}</strong>?</div>
-    <div class="sub">Tippe möglichst genau auf die Haltestelle im Tramnetz. Überspringen zählt nicht als Fehler.</div>
+    <div class="sub">Tippe möglichst genau auf die Haltestelle. Überspringen zählt nicht als Fehler.</div>
     <div id="mapwrap" class="mapwrap" onclick="mapPick(event)">
-      <img id="mapimg" src="tramnetz-2026.png" alt="Tramliniennetz Zürich 2026">
+      <img src="tramnetz-2026.png" alt="Tramliniennetz Zürich 2026">
     </div>
     <div id="fb" class="feedback"></div>
     <div class="controls"><button class="btn" onclick="skipQuestion()">Überspringen →</button></div>`;
@@ -104,12 +101,8 @@ function mapPick(ev){
   const x=((ev.clientX-rect.left)/rect.width)*100;
   const y=((ev.clientY-rect.top)/rect.height)*100;
   const [tx,ty]=HOTSPOTS[current.stop];
-  const dx=x-tx, dy=y-ty;
-  const dist=Math.sqrt(dx*dx+dy*dy);
-
-  // Tolerance is deliberately generous on a phone.
+  const dist=Math.hypot(x-tx,y-ty);
   const ok=dist<=5.0;
-  if(mode==='exam'){ if(ok) examScore++; examLeft--; }
   current.answered=true;
   register(ok,current);
 
@@ -125,15 +118,11 @@ function mapPick(ev){
 
   const f=document.getElementById('fb');
   f.className='feedback '+(ok?'ok':'bad');
-  f.innerHTML=ok
-    ? `Treffer! <b>${current.stop}</b> liegt hier.`
-    : `Nicht ganz. Der <span style="color:#0a9b52"><b>grüne Punkt</b></span> zeigt <b>${current.stop}</b>.`;
-  const controls=document.querySelector('.controls');
-  if(mode==='exam'){
-    controls.innerHTML='<button class="btn primary" onclick="mode=\'exam\';qExam()">Nächste Prüfungsfrage →</button>';
-  }else{
-    controls.innerHTML='<button class="btn" onclick="skipQuestion()">Nächste Frage →</button>';
-  }
+  f.innerHTML=ok ? `Treffer! <b>${current.stop}</b>.`
+                 : `Nicht ganz. Der <b>grüne Punkt</b> zeigt <b>${current.stop}</b>.`;
+
+  document.querySelector('.controls').innerHTML=
+    '<button class="btn primary" onclick="skipQuestion()">Nächste Frage →</button>';
 }
 
 function qMap(){
@@ -157,12 +146,11 @@ function qNext(q=null){let l=q?.line||sample(LINES),r=ROUTES[l],i=q?.i??Math.flo
 function single(k,q,opts,ans){quiz.innerHTML=`<div class="kicker">${k}</div><div class="question">${q}</div><div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(ans)})'>${o}</button>`).join('')}</div><div id="fb" class="feedback"></div><div class="controls"><button class="btn" onclick="skipQuestion()">Überspringen →</button></div>`}
 function choose(el,val,ans){if(document.querySelector('.option.correct,.option.wrong'))return;let ok=val===ans;register(ok,current);el.classList.add(ok?'correct':'wrong');[...document.querySelectorAll('.option')].forEach(x=>{if(x.textContent===ans)x.classList.add('correct')});showFb(ok,`Richtig: <b>${ans}</b>`)}
 function showFb(ok,text){let f=document.getElementById('fb');f.className='feedback '+(ok?'ok':'bad');f.innerHTML=ok?text:`Noch nicht. ${text}`}
-function qRepeat(){if(!mistakes.length){quiz.innerHTML=`<div class="question">Keine offenen Fehler 🎉</div><div class="sub">Falsch beantwortete Fragen landen automatisch hier.</div>`;return}let q=mistakes.shift();save();if(q.type==='stop')qStop(q);else if(q.type==='ends')qEnds(q);else if(q.type==='mapquiz')qMapQuiz(q)else qNext(q)}
-function qExam(){if(examLeft<=0){quiz.innerHTML=`<div class="kicker">Prüfung beendet</div><div class="question">${examScore} / 10 richtig</div><div class="sub">Starte eine neue 10-Fragen-Prüfung.</div><button class="btn primary" onclick="examLeft=10;examScore=0;qExam()">Neue Prüfung</button>`;return}let t=sample(['ends','next','mapquiz']);let old=mode;mode=t;let before=score; if(t==='ends')qEnds();else if(t==='mapquiz'){qMapQuiz(); return;}else qNext(); let oldChoose=window.choose; window.choose=function(el,val,ans){if(document.querySelector('.option.correct,.option.wrong'))return;let ok=val===ans;if(ok)examScore++;examLeft--;oldChoose(el,val,ans);setTimeout(()=>{mode='exam';qExam()},650)}}
+function qRepeat(){if(!mistakes.length){quiz.innerHTML=`<div class="question">Keine offenen Fehler 🎉</div><div class="sub">Falsch beantwortete Fragen landen automatisch hier.</div>`;return}let q=mistakes.shift();save();if(q.type==='stop')qStop(q);else if(q.type==='ends')qEnds(q);else if(q.type==='mapquiz')qMapQuiz(q);else qNext(q)}
+function qExam(){if(examLeft<=0){quiz.innerHTML=`<div class="kicker">Prüfung beendet</div><div class="question">${examScore} / 10 richtig</div><div class="sub">Starte eine neue 10-Fragen-Prüfung.</div><button class="btn primary" onclick="examLeft=10;examScore=0;qExam()">Neue Prüfung</button>`;return}let t=sample(['ends','next']);let old=mode;mode=t;let before=score; if(t==='ends')qEnds();else qNext(); let oldChoose=window.choose; window.choose=function(el,val,ans){if(document.querySelector('.option.correct,.option.wrong'))return;let ok=val===ans;if(ok)examScore++;examLeft--;oldChoose(el,val,ans);setTimeout(()=>{mode='exam';qExam()},650)}}
 
 
 function skipQuestion(){
-  // Skipping never changes score, attempts, streak or mistake list.
   next();
 }
 
@@ -172,9 +160,9 @@ function qMapQuiz(q=null){
   quiz.innerHTML=`
     <div class="kicker">Karten-Quiz</div>
     <div class="question">Wo befindet sich <strong>${stop}</strong>?</div>
-    <div class="sub">Tippe möglichst genau auf die Haltestelle im Tramnetz. Überspringen zählt nicht als Fehler.</div>
+    <div class="sub">Tippe möglichst genau auf die Haltestelle. Überspringen zählt nicht als Fehler.</div>
     <div id="mapwrap" class="mapwrap" onclick="mapPick(event)">
-      <img id="mapimg" src="tramnetz-2026.png" alt="Tramliniennetz Zürich 2026">
+      <img src="tramnetz-2026.png" alt="Tramliniennetz Zürich 2026">
     </div>
     <div id="fb" class="feedback"></div>
     <div class="controls"><button class="btn" onclick="skipQuestion()">Überspringen →</button></div>`;
@@ -187,12 +175,8 @@ function mapPick(ev){
   const x=((ev.clientX-rect.left)/rect.width)*100;
   const y=((ev.clientY-rect.top)/rect.height)*100;
   const [tx,ty]=HOTSPOTS[current.stop];
-  const dx=x-tx, dy=y-ty;
-  const dist=Math.sqrt(dx*dx+dy*dy);
-
-  // Tolerance is deliberately generous on a phone.
+  const dist=Math.hypot(x-tx,y-ty);
   const ok=dist<=5.0;
-  if(mode==='exam'){ if(ok) examScore++; examLeft--; }
   current.answered=true;
   register(ok,current);
 
@@ -208,15 +192,11 @@ function mapPick(ev){
 
   const f=document.getElementById('fb');
   f.className='feedback '+(ok?'ok':'bad');
-  f.innerHTML=ok
-    ? `Treffer! <b>${current.stop}</b> liegt hier.`
-    : `Nicht ganz. Der <span style="color:#0a9b52"><b>grüne Punkt</b></span> zeigt <b>${current.stop}</b>.`;
-  const controls=document.querySelector('.controls');
-  if(mode==='exam'){
-    controls.innerHTML='<button class="btn primary" onclick="mode=\'exam\';qExam()">Nächste Prüfungsfrage →</button>';
-  }else{
-    controls.innerHTML='<button class="btn" onclick="skipQuestion()">Nächste Frage →</button>';
-  }
+  f.innerHTML=ok ? `Treffer! <b>${current.stop}</b>.`
+                 : `Nicht ganz. Der <b>grüne Punkt</b> zeigt <b>${current.stop}</b>.`;
+
+  document.querySelector('.controls').innerHTML=
+    '<button class="btn primary" onclick="skipQuestion()">Nächste Frage →</button>';
 }
 
 function qMap(){
