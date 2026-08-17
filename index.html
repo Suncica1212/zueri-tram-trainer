@@ -28,7 +28,7 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 .feedback{margin-top:14px;padding:12px;border-radius:12px;display:none} .feedback.ok{display:block;background:#e8f7ef;color:#075c32} .feedback.bad{display:block;background:#fff0f0;color:#8d171b}
 .route{background:#eef5fb;padding:14px;border-radius:14px;line-height:1.65;margin-top:10px}
 .footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 8px}
-@media(min-width:720px){.tabs{grid-template-columns:repeat(7,1fr)}}
+@media(min-width:720px){.tabs{grid-template-columns:repeat(8,1fr)}}
 
 .mapwrap{position:relative;width:100%;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;touch-action:manipulation}
 .mapwrap img{display:block;width:100%;height:auto}
@@ -44,6 +44,7 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 <div class="tabs">
 <button class="tab active" data-mode="stop">Haltestelle → Linien</button>
 <button class="tab" data-mode="ends">Linie → Endpunkte</button>
+<button class="tab" data-mode="nodes">Knotenpunkte</button>
 <button class="tab" data-mode="next">Nächster Halt</button>
 <button class="tab" data-mode="repeat">Fehler wiederholen</button>
 <button class="tab" data-mode="exam">Prüfung</button>
@@ -58,8 +59,9 @@ const ROUTES={"2":["Schlieren, Geissweid","Schlieren, Zentrum/Bahnhof","Schliere
 const COLORS={"2": "#D71920", "3": "#83B81A", "4": "#005CA9", "5": "#7A4A21", "6": "#8A2A2B", "7": "#111111", "8": "#69A82F", "9": "#17458F", "10": "#E779A8", "11": "#56A63C", "12": "#79C7E3", "13": "#F2A100", "14": "#7CB9D8", "15": "#B1428C", "16": "#007C91", "17": "#8B1F35", "50": "#8B1F35", "51": "#005CA9"};
 const TEXTCOLORS={"13": "#111111", "12": "#111111", "14": "#111111", "10": "#111111"};
 const IMPORTANT=["Römerhof", "Goldbrunnenplatz", "Escher-Wyss-Platz", "Bahnhof Enge", "Bürkliplatz", "Paradeplatz", "Bahnhofstrasse/HB", "Central", "Bellevue", "Bahnhof Stadelhofen", "Stauffacher", "Milchbuck", "Bahnhof Oerlikon", "Zürich Flughafen"];
-const HOTSPOTS={"Zürich Flughafen":[75.11,2.67],"Seebach":[70.44,12.28],"Auzelg":[82.3,24.59],"Bahnhof Oerlikon":[66.0,22.79],"Milchbuck":[60.25,38.4],"Bucheggplatz":[49.95,39.01],"Escher-Wyss-Platz":[44.44,50.11],"Bahnhof Altstetten Nord":[24.92,46.06],"Albisrieden":[8.4,63.47],"Triemli":[14.38,69.02],"Stauffacher":[44.08,65.27],"Paradeplatz":[52.35,71.42],"Central":[58.69,61.07],"Bellevue":[58.33,74.73],"Bahnhof Stadelhofen":[66.48,69.63],"Bahnhof Enge":[49.23,76.53],"Laubegg":[34.38,86.88],"Klusplatz":[80.62,69.63],"Rehalp":[88.04,83.14],"Bahnhof Tiefenbrunnen":[74.86,93.79],"Wollishoferplatz":[35.34,102.33],"Hirzenbach":[90.81,33.6],"Bahnhof Stettbach":[90.56,43.96],"Zoo":[86.97,52.21],"Frankental":[26.23,26.25],"Geissweid":[5.4,42.16]};
+const HOTSPOTS={"Zürich Flughafen":[72.0,5.0],"Seebach":[68.0,11.5],"Auzelg":[79.0,18.0],"Bahnhof Oerlikon":[65.5,23.0],"Milchbuck":[59.0,39.5],"Bucheggplatz":[52.0,43.5],"Escher-Wyss-Platz":[40.5,49.5],"Bahnhof Altstetten Nord":[24.5,44.0],"Albisrieden":[8.5,60.5],"Triemli":[15.0,69.5],"Stauffacher":[42.0,64.0],"Paradeplatz":[51.0,69.0],"Central":[56.5,58.5],"Bellevue":[54.5,73.0],"Bahnhof Stadelhofen":[61.0,72.0],"Bahnhof Enge":[43.0,69.0],"Laubegg":[37.0,79.5],"Klusplatz":[72.5,67.0],"Rehalp":[79.5,78.0],"Bahnhof Tiefenbrunnen":[74.5,88.5],"Wollishoferplatz":[35.5,89.0],"Hirzenbach":[88.5,31.5],"Bahnhof Stettbach":[90.0,41.5],"Zoo":[84.0,52.5],"Frankental":[25.0,27.5],"Geissweid":[5.5,41.5]};
 const MAP_STOPS=Object.keys(HOTSPOTS);
+const MARKED_NODES=["Zürich Flughafen", "Bahnhof Oerlikon", "Milchbuck", "Schaffhauserplatz", "Bucheggplatz", "Escher-Wyss-Platz", "Limmatplatz", "Sihlquai/HB", "Bahnhofplatz/HB", "Bahnhofstrasse/HB", "Central", "Paradeplatz", "Stauffacher", "Bahnhof Enge", "Bürkliplatz", "Bellevue", "Bahnhof Stadelhofen", "Kreuzplatz", "Römerhof", "Goldbrunnenplatz", "Albisriederplatz", "Bahnhof Altstetten Nord", "Bahnhof Hardbrücke", "Bahnhof Stettbach"];
 const LINES=Object.keys(ROUTES);
 let mode='stop',score=0,attempts=0,streak=0,current=null,examLeft=10,examScore=0;
 let mistakes=[];
@@ -105,8 +107,18 @@ function mapPick(ev){
   const x=((ev.clientX-rect.left)/rect.width)*100;
   const y=((ev.clientY-rect.top)/rect.height)*100;
   const [tx,ty]=HOTSPOTS[current.stop];
-  const dist=Math.hypot(x-tx,y-ty);
-  const ok=dist<=5.0;
+
+  // Compare in actual screen pixels, not percentage units.
+  // This avoids false negatives caused by different map aspect ratios.
+  const tapX=(x/100)*rect.width;
+  const tapY=(y/100)*rect.height;
+  const targetX=(tx/100)*rect.width;
+  const targetY=(ty/100)*rect.height;
+  const distPx=Math.hypot(tapX-targetX,tapY-targetY);
+
+  // Generous mobile hit radius: minimum 34px, scales slightly on larger screens.
+  const hitRadius=Math.max(34, Math.min(48, rect.width*0.085));
+  const ok=distPx<=hitRadius;
   current.answered=true;
   register(ok,current);
 
@@ -119,7 +131,7 @@ function mapPick(ev){
   const f=document.getElementById('fb');
   f.className='feedback '+(ok?'ok':'bad');
   f.innerHTML=ok ? `Treffer! <b>${current.stop}</b>.`
-                 : `Nicht ganz. Der <b>grüne Punkt</b> zeigt <b>${current.stop}</b>.`;
+                 : `Nicht ganz. Der <b>grüne Punkt</b> zeigt die Position von <b>${current.stop}</b>.`;
 
   document.querySelector('.controls').innerHTML=
     '<div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div>';
@@ -140,12 +152,80 @@ quiz.innerHTML=`<div class="kicker">Mehrfachauswahl</div><div class="question">W
 <div class="pills">${LINES.map(l=>`<button class="pill" data-line="${l}" onclick="this.classList.toggle('sel')">${badge(l)}</button>`).join('')}</div>
 <div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div><button class="btn primary" onclick="checkStop()">Prüfen</button></div>`}
 function checkStop(){let s=[...document.querySelectorAll('.pill.sel')].map(x=>x.dataset.line).sort();let c=[...current.correct].sort();let ok=JSON.stringify(s)===JSON.stringify(c);register(ok,current);showFb(ok,`Richtig: ${c.map(badge).join(' ')}`)}
+
+function displayNodeName(s){
+  return s
+    .replace(/^Zürich,\s*/,'')
+    .replace(/^Zürich\s+/,'')
+    .replace(/,\s*Bahnhof$/,' Bahnhof');
+}
+
+function markedNodesForLine(line){
+  const r=ROUTES[line]||[];
+  return MARKED_NODES.filter(node=>r.some(stop=>same(stop,node)));
+}
+
+function qNodes(q=null){
+  const eligible=LINES.filter(l=>markedNodesForLine(l).length>=2);
+  const line=q?.line||sample(eligible);
+  const correct=markedNodesForLine(line);
+
+  // Mix correct nodes with plausible distractors from the same master list.
+  const distractors=shuffle(
+    MARKED_NODES.filter(n=>!correct.some(c=>same(c,n)))
+  ).slice(0, Math.min(5, Math.max(3, 8-correct.length)));
+
+  const choices=shuffle([...correct,...distractors]);
+  current={type:'nodes',line,correct};
+
+  quiz.innerHTML=`
+    <div class="kicker">Markante Knotenpunkte</div>
+    <div class="question">Welche markanten Knotenpunkte liegen auf TRAM ${badge(line)}?</div>
+    <div class="sub">Wähle alle passenden Knotenpunkte dieser Linie.</div>
+    <div class="pills">
+      ${choices.map((n,i)=>`<button class="pill nodepill" data-node="${i}" data-name="${encodeURIComponent(n)}" onclick="this.classList.toggle('sel')">${displayNodeName(n)}</button>`).join('')}
+    </div>
+    <div id="fb" class="feedback"></div>
+    <div class="controls">
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <button class="btn" onclick="skipQuestion()">Überspringen →</button>
+        <button class="btn" onclick="qNodes()">Weiter →</button>
+      </div>
+      <button class="btn primary" onclick="checkNodes()">Prüfen</button>
+    </div>`;
+}
+
+function checkNodes(){
+  if(current?.type!=='nodes') return;
+  const selected=[...document.querySelectorAll('.nodepill.sel')]
+    .map(x=>decodeURIComponent(x.dataset.name));
+
+  const s=[...selected].sort((a,b)=>a.localeCompare(b));
+  const c=[...current.correct].sort((a,b)=>a.localeCompare(b));
+  const ok=JSON.stringify(s)===JSON.stringify(c);
+  register(ok,current);
+
+  document.querySelectorAll('.nodepill').forEach(el=>{
+    const n=decodeURIComponent(el.dataset.name);
+    const isCorrect=current.correct.some(cn=>same(cn,n));
+    const isSelected=el.classList.contains('sel');
+    if(isCorrect) el.classList.add('correct');
+    if(isSelected && !isCorrect) el.classList.add('wrong');
+  });
+
+  const f=document.getElementById('fb');
+  f.className='feedback '+(ok?'ok':'bad');
+  f.innerHTML=ok
+    ? `Richtig. Markante Knotenpunkte: <b>${current.correct.map(displayNodeName).join(' · ')}</b>`
+    : `Richtig wären: <b>${current.correct.map(displayNodeName).join(' · ')}</b>`;
+}
+
 function qEnds(q=null){let l=q?.line||sample(LINES),r=ROUTES[l],ans=`${r[0]} ↔ ${r.at(-1)}`;let opts=shuffle([ans,...shuffle(LINES.filter(x=>x!==l)).slice(0,3).map(x=>`${ROUTES[x][0]} ↔ ${ROUTES[x].at(-1)}`)]);current={type:'ends',line:l,answer:ans};single(`TRAM ${badge(l)}`,`Welche Endpunkte gehören zu dieser Linie?`,opts,ans)}
 function qNext(q=null){let l=q?.line||sample(LINES),r=ROUTES[l],i=q?.i??Math.floor(Math.random()*(r.length-1)),ans=r[i+1];let pool=[...new Set(Object.values(ROUTES).flat())].filter(x=>x!==ans&&x!==r[i]);let opts=shuffle([ans,...shuffle(pool).slice(0,3)]);current={type:'next',line:l,i,answer:ans};single(`TRAM ${badge(l)}`,`Was kommt Richtung <strong>${r.at(-1)}</strong> direkt nach <strong>${r[i]}</strong>?`,opts,ans)}
 function single(k,q,opts,ans){quiz.innerHTML=`<div class="kicker">${k}</div><div class="question">${q}</div><div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(ans)})'>${o}</button>`).join('')}</div><div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div></div>`}
 function choose(el,val,ans){if(document.querySelector('.option.correct,.option.wrong'))return;let ok=val===ans;register(ok,current);el.classList.add(ok?'correct':'wrong');[...document.querySelectorAll('.option')].forEach(x=>{if(x.textContent===ans)x.classList.add('correct')});showFb(ok,`Richtig: <b>${ans}</b>`)}
 function showFb(ok,text){let f=document.getElementById('fb');f.className='feedback '+(ok?'ok':'bad');f.innerHTML=ok?text:`Noch nicht. ${text}`}
-function qRepeat(){if(!mistakes.length){quiz.innerHTML=`<div class="question">Keine offenen Fehler 🎉</div><div class="sub">Falsch beantwortete Fragen landen automatisch hier.</div>`;return}let q=mistakes.shift();save();if(q.type==='stop')qStop(q);else if(q.type==='ends')qEnds(q);else if(q.type==='mapquiz')qMapQuiz(q);else qNext(q)}
+function qRepeat(){if(!mistakes.length){quiz.innerHTML=`<div class="question">Keine offenen Fehler 🎉</div><div class="sub">Falsch beantwortete Fragen landen automatisch hier.</div>`;return}let q=mistakes.shift();save();if(q.type==='stop')qStop(q);else if(q.type==='ends')qEnds(q);else if(q.type==='nodes')qNodes(q);else if(q.type==='mapquiz')qMapQuiz(q);else qNext(q)}
 function qExam(){if(examLeft<=0){quiz.innerHTML=`<div class="kicker">Prüfung beendet</div><div class="question">${examScore} / 10 richtig</div><div class="sub">Starte eine neue 10-Fragen-Prüfung.</div><button class="btn primary" onclick="examLeft=10;examScore=0;qExam()">Neue Prüfung</button>`;return}let t=sample(['ends','next']);let old=mode;mode=t;let before=score; if(t==='ends')qEnds();else qNext(); let oldChoose=window.choose; window.choose=function(el,val,ans){if(document.querySelector('.option.correct,.option.wrong'))return;let ok=val===ans;if(ok)examScore++;examLeft--;oldChoose(el,val,ans);setTimeout(()=>{mode='exam';qExam()},650)}}
 
 
