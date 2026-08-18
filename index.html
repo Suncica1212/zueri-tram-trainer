@@ -15,20 +15,21 @@
 header{background:linear-gradient(135deg,#0a64b7,#084d8b);color:white;border-radius:20px;padding:22px;box-shadow:0 10px 28px #0a356622}
 h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 0;opacity:.9}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px} .stat{background:#ffffff20;border:1px solid #ffffff2b;border-radius:13px;padding:10px;text-align:center} .stat b{display:block;font-size:22px}
-.tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:14px 0} button{font:inherit}
+.tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin:14px 0;width:100%;align-items:stretch} button{font:inherit}
 .tab,.btn,.option,.pill{border:1px solid var(--line);background:white;border-radius:13px;cursor:pointer}
-.tab{padding:12px 8px;font-weight:750} .tab.active{background:var(--blue);color:white;border-color:var(--blue)}
+.tab{padding:12px 8px;font-weight:750;min-width:0;width:100%;white-space:normal;line-height:1.15} .tab.active{background:var(--blue);color:white;border-color:var(--blue)}
 .card{background:white;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 5px 18px #14202d10}
 .kicker{font-size:12px;color:var(--blue);font-weight:850;letter-spacing:.09em;text-transform:uppercase}
 .question{font-size:24px;font-weight:850;line-height:1.18;margin:7px 0 16px} .sub{color:var(--muted);margin-bottom:14px}
 .options{display:grid;gap:9px} .option{padding:13px 14px;text-align:left;font-size:16px} .option.correct{background:#e8f7ef;border-color:#77c89e} .option.wrong{background:#fff0f0;border-color:#e6a0a3}
 .pills{display:flex;flex-wrap:wrap;gap:8px} .pill{display:flex;align-items:center;gap:8px;padding:7px 10px;font-weight:750} .pill.sel{outline:none}.pill.sel .badge{background:#0a64b7;color:#fff;border-color:#0a64b7}
+.badge.result-correct{background:#0a64b7;color:#fff;border-color:#0a64b7}.badge.result-wrong{background:#c62f35;color:#fff;border-color:#c62f35}.badge.result-missed{background:#111;color:#fff;border-color:#111}
 .badge{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#0a64b7;background:#fff;border:2px solid #0a64b7;font-weight:900;flex:none;box-shadow:none}
 .controls{display:flex;gap:9px;justify-content:space-between;align-items:center;margin-top:17px;flex-wrap:wrap}.control-left{display:flex;gap:9px;align-items:center;flex-wrap:wrap} .btn{padding:12px 14px;font-weight:800} .btn.primary{background:var(--blue);color:white;border-color:var(--blue)}
 .feedback{margin-top:14px;padding:12px;border-radius:12px;display:none} .feedback.ok{display:block;background:#e8f7ef;color:#075c32} .feedback.bad{display:block;background:#fff0f0;color:#8d171b}
 .route{background:#eef5fb;padding:14px;border-radius:14px;line-height:1.65;margin-top:10px}
 .footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 8px}
-@media(min-width:720px){.tabs{grid-template-columns:repeat(8,1fr)}}
+@media(min-width:720px){}
 
 .mapwrap{position:relative;width:100%;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;touch-action:manipulation}
 .mapwrap img{display:block;width:100%;height:auto}
@@ -36,20 +37,31 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 .mapmarker.pick{background:#0a64b7}
 .mapmarker.answer{background:#0a9b52}
 .mapmarker.wrong{background:#c62f35}
+
+@media (min-width:700px) and (max-width:1050px){
+  .tabs{grid-template-columns:repeat(4,minmax(0,1fr));}
+}
+@media (min-width:1051px){
+  .tabs{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));}
+}
+
 </style>
 </head>
 <body><div class="app">
 <header><div class="kicker" style="color:#d9edff">Private Lern-App</div><h1>Züri Tram Trainer</h1><p>2026 · inkl. Baustellenlinien 50 & 51</p>
-<div class="stats"><div class="stat"><b id="score">0</b>richtig</div><div class="stat"><b id="attempts">0</b>Fragen</div><div class="stat"><b id="streak">0</b>Serie</div></div></header>
+<div class="stats"><div class="stat"><b id="score">0</b>richtig</div><div class="stat"><b id="hitRate">0%</b>Trefferquote</div><div class="stat"><b id="skipRate">0%</b>übersprungen</div></div></header>
 <div class="tabs">
-<button class="tab active" data-mode="stop">Haltestelle → Linien</button>
+<button class="tab active" data-mode="map">Liniennetz</button>
 <button class="tab" data-mode="ends">Linie → Endpunkte</button>
+<button class="tab" data-mode="stop">Haltestelle → Linien</button>
 <button class="tab" data-mode="nodes">Knotenpunkte</button>
+<button class="tab" data-mode="connections">Von A → B</button>
+<button class="tab" data-mode="mapquiz">Karten-Quiz</button>
 <button class="tab" data-mode="next">Nächster Halt</button>
+<button class="tab" data-mode="images">Bilder-Quiz</button>
+<button class="tab" data-mode="skipped">Übersprungene üben</button>
 <button class="tab" data-mode="repeat">Fehler wiederholen</button>
 <button class="tab" data-mode="exam">Prüfung</button>
-<button class="tab" data-mode="mapquiz">Karten-Quiz</button>
-<button class="tab" data-mode="map">Liniennetz</button>
 </div>
 <main class="card"><div id="quiz"></div></main>
 <div class="footer">Private Lernhilfe · nicht offiziell von VBZ/ZVV.</div>
@@ -59,36 +71,53 @@ const ROUTES={"2":["Schlieren, Geissweid","Schlieren, Zentrum/Bahnhof","Schliere
 const COLORS={"2": "#D71920", "3": "#83B81A", "4": "#005CA9", "5": "#7A4A21", "6": "#8A2A2B", "7": "#111111", "8": "#69A82F", "9": "#17458F", "10": "#E779A8", "11": "#56A63C", "12": "#79C7E3", "13": "#F2A100", "14": "#7CB9D8", "15": "#B1428C", "16": "#007C91", "17": "#8B1F35", "50": "#8B1F35", "51": "#005CA9"};
 const TEXTCOLORS={"13": "#111111", "12": "#111111", "14": "#111111", "10": "#111111"};
 const IMPORTANT=["Römerhof", "Goldbrunnenplatz", "Escher-Wyss-Platz", "Bahnhof Enge", "Bürkliplatz", "Paradeplatz", "Bahnhofstrasse/HB", "Central", "Bellevue", "Bahnhof Stadelhofen", "Stauffacher", "Milchbuck", "Bahnhof Oerlikon", "Zürich Flughafen"];
-const HOTSPOTS={"Zürich Flughafen":[72.0,5.0],"Seebach":[68.0,11.5],"Auzelg":[79.0,18.0],"Bahnhof Oerlikon":[65.5,23.0],"Milchbuck":[55.1,40.0],"Bucheggplatz":[52.0,43.5],"Escher-Wyss-Platz":[40.5,49.5],"Bahnhof Altstetten Nord":[24.5,44.0],"Albisrieden":[8.5,60.5],"Triemli":[15.0,69.5],"Stauffacher":[42.0,64.0],"Paradeplatz":[51.0,69.0],"Central":[56.5,58.5],"Bellevue":[54.5,73.0],"Bahnhof Stadelhofen":[61.0,72.0],"Bahnhof Enge":[43.0,69.0],"Laubegg":[37.0,79.5],"Klusplatz":[72.5,67.0],"Rehalp":[79.5,78.0],"Bahnhof Tiefenbrunnen":[74.5,88.5],"Wollishoferplatz":[35.5,89.0],"Hirzenbach":[88.5,31.5],"Bahnhof Stettbach":[90.0,41.5],"Zoo":[83.0,54.8],"Frankental":[25.0,27.5],"Geissweid":[7.8,39.4],"Römerhof":[67.1,64.3],"Goldbrunnenplatz":[38.4,68.2],"Albisgüetli":[20.8,88.5],"Hardturm":[29.1,39.8],"Balgrist":[83.0,81.0],"Hegibachplatz":[72.8,76.8],"Bahnhof Selnau":[48.0,67.2],"Bahnhof Wiedikon":[39.6,66.1],"Hardplatz":[35.0,53.0],"Albisriederplatz":[27.8,55.0],"Letzigrund":[22.7,53.9],"Helvetiaplatz":[43.5,62.2],"Hottingerplatz":[65.4,66.8],"Universität Irchel":[65.4,36.5],"ETH/Universitätsspital":[65.7,59.1],"Sihlquai/HB":[49.8,54.2],"Limmatplatz":[44.8,50.2],"Haldenegg":[59.0,54.3],"Bezirksgebäude":[37.5,62.7]};
+const HOTSPOTS={"Zürich Flughafen":[72.0,5.0],"Seebach":[68.0,11.5],"Auzelg":[79.0,18.0],"Bahnhof Oerlikon":[65.5,23.0],"Milchbuck":[55.1,40.0],"Bucheggplatz":[52.0,43.5],"Escher-Wyss-Platz":[40.5,49.5],"Bahnhof Altstetten Nord":[24.5,44.0],"Albisrieden":[8.5,60.5],"Triemli":[15.0,69.5],"Stauffacher":[42.0,64.0],"Paradeplatz":[51.0,69.0],"Central":[56.5,58.5],"Bellevue":[54.5,73.0],"Bahnhof Stadelhofen":[61.0,72.0],"Bahnhof Enge":[43.0,69.0],"Laubegg":[37.0,79.5],"Klusplatz":[72.5,67.0],"Rehalp":[86.0,82.5],"Bahnhof Tiefenbrunnen":[74.5,88.5],"Wollishoferplatz":[35.5,89.0],"Hirzenbach":[88.5,31.5],"Bahnhof Stettbach":[90.0,41.5],"Zoo":[83.0,54.8],"Frankental":[25.0,27.5],"Geissweid":[7.8,39.4],"Römerhof":[67.1,64.3],"Goldbrunnenplatz":[32.5,68.2],"Albisgüetli":[20.8,88.5],"Hardturm":[29.1,39.8],"Balgrist":[83.0,81.0],"Hegibachplatz":[72.8,76.8],"Bahnhof Selnau":[48.0,67.2],"Bahnhof Wiedikon":[39.6,66.1],"Hardplatz":[35.0,53.0],"Albisriederplatz":[27.8,55.0],"Letzigrund":[22.7,53.9],"Helvetiaplatz":[43.5,62.2],"Hottingerplatz":[65.4,66.8],"Universität Irchel":[65.4,36.5],"ETH/Universitätsspital":[65.7,59.1],"Sihlquai/HB":[49.8,54.2],"Limmatplatz":[44.8,50.2],"Haldenegg":[59.0,54.3],"Bezirksgebäude":[37.5,62.7]};
 const MAP_STOPS=Object.keys(HOTSPOTS);
 const MARKED_NODES=["Zürich Flughafen", "Bahnhof Oerlikon", "Milchbuck", "Schaffhauserplatz", "Bucheggplatz", "Escher-Wyss-Platz", "Limmatplatz", "Sihlquai/HB", "Bahnhofplatz/HB", "Bahnhofstrasse/HB", "Central", "Paradeplatz", "Stauffacher", "Bahnhof Enge", "Bürkliplatz", "Bellevue", "Bahnhof Stadelhofen", "Kreuzplatz", "Römerhof", "Goldbrunnenplatz", "Albisriederplatz", "Bahnhof Altstetten Nord", "Bahnhof Hardbrücke", "Bahnhof Stettbach"];
 const IMPORTANT_NODES_BY_LINE={"2":["Stauffacher","Paradeplatz","Bellevue","Bahnhof Stadelhofen"],"3":["Albisriederplatz","Stauffacher","Bahnhofplatz/HB","Central","Römerhof"],"4":["Bellevue","Bahnhof Stadelhofen","Central","Bahnhofstrasse/HB"],"5":["Bahnhof Enge","Paradeplatz","Bürkliplatz","Bellevue","Bahnhof Stadelhofen"],"6":["ETH/Universitätsspital","Central","Bahnhofplatz/HB"],"7":["Bahnhof Stettbach","Milchbuck","Schaffhauserplatz","Central","Bahnhofstrasse/HB","Paradeplatz","Bahnhof Enge"],"8":["Escher-Wyss-Platz","Bahnhof Hardbrücke","Stauffacher","Bahnhof Enge","Bürkliplatz","Bellevue"],"9":["Milchbuck","ETH/Universitätsspital","Bellevue","Bürkliplatz","Paradeplatz","Stauffacher","Goldbrunnenplatz"],"10":["Zürich Flughafen","Bahnhof Oerlikon","Milchbuck","ETH/Universitätsspital","Central","Bahnhofplatz/HB"],"11":["Central","Bahnhofstrasse/HB","Paradeplatz","Bürkliplatz","Bellevue"],"12":["Zürich Flughafen","Bahnhof Wallisellen","Bahnhof Stettbach"],"13":["Bahnhof Enge","Paradeplatz","Bahnhofstrasse/HB"],"14":["Triemli","Goldbrunnenplatz","Stauffacher","Bahnhofplatz/HB"],"15":["Bellevue","Central","Bahnhof Tiefenbrunnen"],"16":["Bahnhof Enge/Bederstrasse","Paradeplatz","Bahnhofstrasse/HB","Central","Schaffhauserplatz","Milchbuck"],"17":["Escher-Wyss-Platz","Limmatplatz","Sihlquai/HB","Schaffhauserplatz","Bucheggplatz"],"50":["Bahnhof Oerlikon","Bucheggplatz","Schaffhauserplatz","Sihlquai/HB","Limmatplatz","Escher-Wyss-Platz","Frankental"],"51":["Bahnhof Altstetten Nord","Escher-Wyss-Platz","Limmatplatz","Sihlquai/HB","Schaffhauserplatz","Milchbuck","Bahnhof Oerlikon Ost","Seebach"]};
 const LINES=Object.keys(ROUTES);
-let mode='stop',score=0,attempts=0,streak=0,current=null,examLeft=10,examScore=0;
-let mistakes=[];
-function badge(l){return `<span class="badge">${l}</span>`}
-function save(){localStorage.setItem('tramTrainerV2',JSON.stringify({score,attempts,streak,mistakes}));scoreEl.textContent=score;attemptsEl.textContent=attempts;streakEl.textContent=streak}
-function load(){try{let x=JSON.parse(localStorage.getItem('tramTrainerV2')||'{}');score=x.score||0;attempts=x.attempts||0;streak=x.streak||0;mistakes=x.mistakes||[]}catch(e){}save()}
-const scoreEl=document.getElementById('score'),attemptsEl=document.getElementById('attempts'),streakEl=document.getElementById('streak');
+let mode='map',score=0,attempts=0,skippedCount=0,current=null,examLeft=10,examScore=0;
+let mistakes=[],skippedQuestions=[],lastQuestionKey='';
+function badge(l,cls=''){return `<span class="badge ${cls}">${l}</span>`}
+const scoreEl=document.getElementById('score'),hitRateEl=document.getElementById('hitRate'),skipRateEl=document.getElementById('skipRate');
+function updateStats(){
+  scoreEl.textContent=score;
+  hitRateEl.textContent=(attempts?Math.round(score/attempts*100):0)+'%';
+  const total=attempts+skippedCount;
+  skipRateEl.textContent=(total?Math.round(skippedCount/total*100):0)+'%';
+}
+function save(){localStorage.setItem('tramTrainerV3',JSON.stringify({score,attempts,skippedCount,mistakes,skippedQuestions}));updateStats()}
+function load(){try{let x=JSON.parse(localStorage.getItem('tramTrainerV3')||'{}');if(!Object.keys(x).length){let old=JSON.parse(localStorage.getItem('tramTrainerV2')||'{}');x={score:old.score||0,attempts:old.attempts||0,mistakes:old.mistakes||[]}}score=x.score||0;attempts=x.attempts||0;skippedCount=x.skippedCount||0;mistakes=x.mistakes||[];skippedQuestions=x.skippedQuestions||[]}catch(e){}save()}
 function sample(a){return a[Math.floor(Math.random()*a.length)]} function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
 function norm(s){return s.toLowerCase().replace('bahnhofstrasse/hb','bahnhofstr./hb').replace(/[.,/()-]/g,' ').replace(/\s+/g,' ').trim()}
 function same(a,b){let A=norm(a),B=norm(b);if(A===B)return true;if(A.includes(B)||B.includes(A))return Math.min(A.length,B.length)>6;return false}
 function linesAt(stop){return LINES.filter(l=>ROUTES[l].some(s=>same(s,stop)))}
-function register(ok,q){attempts++;if(ok){score++;streak++;}else{streak=0;if(q)mistakes.push(q)}save()}
+function numericSort(a,b){return Number(a)-Number(b)}
+function questionKey(q){if(!q)return'';return [q.type,q.stop||'',q.line||'',q.i??''].join('|')}
+function register(ok,q){attempts++;if(ok)score++;else if(q)mistakes.push({...q});save()}
+function rememberCurrent(){lastQuestionKey=questionKey(current)}
 function next(){
+  if(current) rememberCurrent();
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
   if(mode==='stop')qStop();
   else if(mode==='ends')qEnds();
   else if(mode==='nodes')qNodes();
+  else if(mode==='connections')qConnections();
   else if(mode==='next')qNext();
+  else if(mode==='images')qImages();
   else if(mode==='repeat')qRepeat();
+  else if(mode==='skipped')qSkipped();
   else if(mode==='mapquiz')qMapQuiz();
   else if(mode==='map')qMap();
   else qExam();
 }
-function skipQuestion(){ next(); }
-
+function skipQuestion(){
+  if(current && !current.answered){skippedCount++;skippedQuestions.push({...current});current.answered=true;save()}
+  next();
+}
+function avoidRepeat(makeQuestion){for(let i=0;i<12;i++){makeQuestion();if(questionKey(current)!==lastQuestionKey)return;} }
 function qMapQuiz(q=null){
+  if(!q){let stop;do{stop=sample(MAP_STOPS)}while('mapquiz|'+stop+'||'===lastQuestionKey);q={stop}}
   const stop=q?.stop||sample(MAP_STOPS);
   current={type:'mapquiz',stop};
   quiz.innerHTML=`
@@ -149,11 +178,21 @@ function qMap(){
     Laubegg – Saalsporthalle – Sihlcity Nord – Waffenplatzstrasse – Bahnhof Enge/Bederstrasse – Tunnelstrasse – Stockerstrasse – Paradeplatz – Rennweg – Bahnhofstrasse/HB – Central – Haldenegg – Sonneggstrasse – Ottikerstrasse – Röslistrasse – Schaffhauserplatz – Guggachstrasse – Milchbuck</div>`;
 }
 
-function qStop(q=null){let stop=q?.stop||sample(IMPORTANT.filter(s=>linesAt(s).length));let correct=linesAt(stop);current={type:'stop',stop,correct};
-quiz.innerHTML=`<div class="kicker">Mehrfachauswahl</div><div class="question">Welche Tramlinien halten am <strong>${stop}</strong>?</div><div class="sub">Alle passenden Linien wählen.</div>
-<div class="pills">${LINES.map(l=>`<button class="pill" data-line="${l}" onclick="this.classList.toggle('sel')">${badge(l)}</button>`).join('')}</div>
-<div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div><button class="btn primary" onclick="checkStop()">Prüfen</button></div>`}
-function checkStop(){let s=[...document.querySelectorAll('.pill.sel')].map(x=>x.dataset.line).sort();let c=[...current.correct].sort();let ok=JSON.stringify(s)===JSON.stringify(c);register(ok,current);showFb(ok,`Richtig: ${c.map(badge).join(' ')}`)}
+function qStop(q=null){
+  const make=()=>{let stop=q?.stop||sample(IMPORTANT.filter(s=>linesAt(s).length));let correct=linesAt(stop);current={type:'stop',stop,correct};
+  quiz.innerHTML=`<div class="kicker">Mehrfachauswahl</div><div class="question">Welche Tramlinien halten am <strong>${stop}</strong>?</div><div class="sub">Alle passenden Linien wählen.</div>
+  <div class="pills">${LINES.map(l=>`<button class="pill" data-line="${l}" onclick="this.classList.toggle('sel')">${badge(l)}</button>`).join('')}</div>
+  <div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div><button class="btn primary" onclick="checkStop()">Prüfen</button></div>`};
+  if(q)make();else avoidRepeat(make)
+}
+function checkStop(){
+  if(current?.answered)return;
+  let s=[...document.querySelectorAll('.pill.sel')].map(x=>x.dataset.line).sort(numericSort);
+  let c=[...current.correct].sort(numericSort);let ok=JSON.stringify(s)===JSON.stringify(c);current.answered=true;register(ok,current);
+  const all=[...new Set([...s,...c])].sort(numericSort);
+  const result=all.map(l=>badge(l,s.includes(l)?(c.includes(l)?'result-correct':'result-wrong'):'result-missed')).join(' ');
+  showFb(ok,`${ok?'Richtig':'Auswertung'}: ${result}`)
+}
 
 
 function displayNodeName(s){
@@ -190,7 +229,8 @@ function qNodes(q=null){
 }
 
 function checkNodes(){
-  if(current?.type!=='nodes') return;
+  if(current?.type!=='nodes' || current?.answered) return;
+  current.answered=true;
   const selected=[...document.querySelectorAll('.nodepill.sel')]
     .map(x=>decodeURIComponent(x.dataset.name));
 
@@ -214,12 +254,77 @@ function checkNodes(){
     : `Richtig sind: <b>${current.correct.map(displayNodeName).join(' · ')}</b>`;
 }
 
-function qEnds(q=null){let l=q?.line||sample(LINES),r=ROUTES[l],ans=`${r[0]} ↔ ${r.at(-1)}`;let opts=shuffle([ans,...shuffle(LINES.filter(x=>x!==l)).slice(0,3).map(x=>`${ROUTES[x][0]} ↔ ${ROUTES[x].at(-1)}`)]);current={type:'ends',line:l,answer:ans};single(`TRAM ${badge(l)}`,`Welche Endpunkte gehören zu dieser Linie?`,opts,ans)}
-function qNext(q=null){let l=q?.line||sample(LINES),r=ROUTES[l],i=q?.i??Math.floor(Math.random()*(r.length-1)),ans=r[i+1];let pool=[...new Set(Object.values(ROUTES).flat())].filter(x=>x!==ans&&x!==r[i]);let opts=shuffle([ans,...shuffle(pool).slice(0,3)]);current={type:'next',line:l,i,answer:ans};single(`TRAM ${badge(l)}`,`Was kommt Richtung <strong>${r.at(-1)}</strong> direkt nach <strong>${r[i]}</strong>?`,opts,ans)}
+
+
+
+const IMAGE_QUIZ=[{"src":"bilderquiz/Albisrieden.jpg","stop":"Albisrieden"},{"src":"bilderquiz/Bahnhof_Enge.jpg","stop":"Bahnhof Enge"},{"src":"bilderquiz/Bahnhofquai_Hauptbahnhof.jpg","stop":"Bahnhofquai/Hauptbahnhof"},{"src":"bilderquiz/Bahnhofstrasse.jpg","stop":"Bahnhofstrasse/HB"},{"src":"bilderquiz/Bellevue_02.jpg","stop":"Bellevue"},{"src":"bilderquiz/Buerkliplatz_01.jpg","stop":"Bürkliplatz"},{"src":"bilderquiz/Central_01.jpg","stop":"Central"},{"src":"bilderquiz/Central_02.jpg","stop":"Central"},{"src":"bilderquiz/Escher_Wyss_Platz.jpg","stop":"Escher-Wyss-Platz"},{"src":"bilderquiz/Fernsehstudio.jpg","stop":"Fernsehstudio"},{"src":"bilderquiz/Glattpark.jpg","stop":"Glattpark"},{"src":"bilderquiz/Goldbrunnenplatz.jpg","stop":"Goldbrunnenplatz"},{"src":"bilderquiz/Hegibachplatz.jpg","stop":"Hegibachplatz"},{"src":"bilderquiz/Helvetiaplatz.jpg","stop":"Helvetiaplatz"},{"src":"bilderquiz/Klusplatz.jpg","stop":"Klusplatz"},{"src":"bilderquiz/Limmatplatz_01.jpg","stop":"Limmatplatz"},{"src":"bilderquiz/Limmatplatz_02.jpg","stop":"Limmatplatz"},{"src":"bilderquiz/Paradeplatz_01.jpg","stop":"Paradeplatz"},{"src":"bilderquiz/Paradeplatz_02.jpg","stop":"Paradeplatz"},{"src":"bilderquiz/Rehalp.jpg","stop":"Rehalp"},{"src":"bilderquiz/Romerhof.jpg","stop":"Römerhof"},{"src":"bilderquiz/Seebach.jpg","stop":"Seebach"},{"src":"bilderquiz/Seebach_02.jpg","stop":"Seebach"},{"src":"bilderquiz/Sihlcity_Nord.jpg","stop":"Sihlcity Nord"},{"src":"bilderquiz/Stadelhofen_01.jpg","stop":"Bahnhof Stadelhofen"},{"src":"bilderquiz/Stadelhofen_02.jpg","stop":"Bahnhof Stadelhofen"},{"src":"bilderquiz/Stauffacher.jpg","stop":"Stauffacher"},{"src":"bilderquiz/Stauffacher_01.jpg","stop":"Stauffacher"},{"src":"bilderquiz/Tiefenbrunnen_01.jpg","stop":"Bahnhof Tiefenbrunnen"},{"src":"bilderquiz/Tiefenbrunnen_02.jpg","stop":"Bahnhof Tiefenbrunnen"},{"src":"bilderquiz/Triemli.jpg","stop":"Triemli"},{"src":"bilderquiz/Triemli_01.jpg","stop":"Triemli"},{"src":"bilderquiz/Triemli_02.jpg","stop":"Triemli"},{"src":"bilderquiz/Werdhoelzli.jpg","stop":"Werdhölzli"},{"src":"bilderquiz/Wollishofen.jpg","stop":"Bahnhof Wollishofen"},{"src":"bilderquiz/Wollishoferplatz.jpg","stop":"Wollishoferplatz"},{"src":"bilderquiz/Wollishoferplatz_02.jpg","stop":"Wollishoferplatz"},{"src":"bilderquiz/Zoo_01.jpg","stop":"Zoo"},{"src":"bilderquiz/Zoo_02.jpg","stop":"Zoo"}];
+function qImages(q=null){
+  const make=()=>{
+    let item=q?.src?{src:q.src,stop:q.stop}:sample(IMAGE_QUIZ);
+    current={type:'images',src:item.src,stop:item.stop};
+    const stations=[...new Set(IMAGE_QUIZ.map(x=>x.stop))];
+    const opts=shuffle([item.stop,...shuffle(stations.filter(s=>s!==item.stop)).slice(0,3)]);
+    quiz.innerHTML=`<div class="kicker">Bilder-Quiz</div><div class="question">Welche Haltestelle ist auf diesem Bild zu sehen?</div>
+      <img src="${item.src}" alt="Haltestellenfoto" style="display:block;width:100%;max-height:430px;object-fit:contain;border-radius:14px;border:1px solid var(--line);background:#f5f5f5;margin-bottom:14px">
+      <div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(item.stop)})'>${o}</button>`).join('')}</div>
+      <div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div></div>`;
+  };
+  if(q)make();else avoidRepeat(make);
+}
+
+const CONNECTION_PAIRS=[
+  ['Central','Bellevue'],
+  ['Bahnhofstrasse/HB','Laubegg'],
+  ['Paradeplatz','Bellevue'],
+  ['Central','Bahnhofstrasse/HB'],
+  ['Stauffacher','Paradeplatz'],
+  ['Bellevue','Bahnhof Stadelhofen'],
+  ['Milchbuck','Central'],
+  ['Schaffhauserplatz','Central'],
+  ['Goldbrunnenplatz','Stauffacher'],
+  ['Bahnhof Enge','Bellevue'],
+  ['Albisriederplatz','Stauffacher'],
+  ['ETH/Universitätsspital','Central'],
+  ['Limmatplatz','Schaffhauserplatz'],
+  ['Escher-Wyss-Platz','Limmatplatz'],
+  ['Römerhof','Central'],
+  ['Klusplatz','Central'],
+  ['Hardturm','Bellevue'],
+  ['Triemli','Stauffacher']
+];
+function directLines(a,b){return LINES.filter(l=>ROUTES[l].some(s=>same(s,a))&&ROUTES[l].some(s=>same(s,b))).sort(numericSort)}
+function qConnections(q=null){
+  const make=()=>{
+    let pair=q?.pair||sample(CONNECTION_PAIRS.filter(([a,b])=>directLines(a,b).length));
+    let [from,to]=pair,correct=directLines(from,to);
+    current={type:'connections',pair:[from,to],correct};
+    quiz.innerHTML=`<div class="kicker">Direktverbindung</div>
+      <div class="question">Welche Tramlinie${correct.length===1?'':'n'} bringt dich ohne Umsteigen von <strong>${from}</strong> nach <strong>${to}</strong>?</div>
+      <div class="sub">Wähle alle Linien, mit denen du beide Haltestellen direkt erreichst.</div>
+      <div class="pills">${LINES.map(l=>`<button class="pill" data-line="${l}" onclick="this.classList.toggle('sel')">${badge(l)}</button>`).join('')}</div>
+      <div id="fb" class="feedback"></div>
+      <div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div><button class="btn primary" onclick="checkConnections()">Prüfen</button></div>`;
+  };
+  if(q)make();else avoidRepeat(make)
+}
+function checkConnections(){
+  if(current?.type!=='connections'||current?.answered)return;
+  let s=[...document.querySelectorAll('.pill.sel')].map(x=>x.dataset.line).sort(numericSort);
+  let c=[...current.correct].sort(numericSort);
+  let ok=JSON.stringify(s)===JSON.stringify(c);current.answered=true;register(ok,current);
+  const all=[...new Set([...s,...c])].sort(numericSort);
+  const result=all.map(l=>badge(l,s.includes(l)?(c.includes(l)?'result-correct':'result-wrong'):'result-missed')).join(' ');
+  showFb(ok,`${ok?'Richtig':'Auswertung'}: ${result}`)
+}
+
+function qEnds(q=null){const make=()=>{let l=q?.line||sample(LINES),r=ROUTES[l],ans=`${r[0]} ↔ ${r.at(-1)}`;let opts=shuffle([ans,...shuffle(LINES.filter(x=>x!==l)).slice(0,3).map(x=>`${ROUTES[x][0]} ↔ ${ROUTES[x].at(-1)}`)]);current={type:'ends',line:l,answer:ans};single(`TRAM ${badge(l)}`,`Welche Endpunkte gehören zu dieser Linie?`,opts,ans)};if(q)make();else avoidRepeat(make)}
+function qNext(q=null){const make=()=>{let l=q?.line||sample(LINES),r=ROUTES[l],i=q?.i??Math.floor(Math.random()*(r.length-1)),ans=r[i+1];let pool=[...new Set(Object.values(ROUTES).flat())].filter(x=>x!==ans&&x!==r[i]);let opts=shuffle([ans,...shuffle(pool).slice(0,3)]);current={type:'next',line:l,i,answer:ans};single(`TRAM ${badge(l)}`,`Was kommt Richtung <strong>${r.at(-1)}</strong> direkt nach <strong>${r[i]}</strong>?`,opts,ans)};if(q)make();else avoidRepeat(make)}
 function single(k,q,opts,ans){quiz.innerHTML=`<div class="kicker">${k}</div><div class="question">${q}</div><div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(ans)})'>${o}</button>`).join('')}</div><div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div></div>`}
-function choose(el,val,ans){if(document.querySelector('.option.correct,.option.wrong'))return;let ok=val===ans;register(ok,current);el.classList.add(ok?'correct':'wrong');[...document.querySelectorAll('.option')].forEach(x=>{if(x.textContent===ans)x.classList.add('correct')});showFb(ok,`Richtig: <b>${ans}</b>`)}
+function choose(el,val,ans){if(current?.answered)return;let ok=val===ans;current.answered=true;register(ok,current);el.classList.add(ok?'correct':'wrong');[...document.querySelectorAll('.option')].forEach(x=>{if(x.textContent===ans)x.classList.add('correct')});showFb(ok,`Richtig: <b>${ans}</b>`)}
 function showFb(ok,text){let f=document.getElementById('fb');f.className='feedback '+(ok?'ok':'bad');f.innerHTML=ok?text:`Noch nicht. ${text}`}
-function qRepeat(){if(!mistakes.length){quiz.innerHTML=`<div class="question">Keine offenen Fehler 🎉</div><div class="sub">Falsch beantwortete Fragen landen automatisch hier.</div>`;return}let q=mistakes.shift();save();if(q.type==='stop')qStop(q);else if(q.type==='ends')qEnds(q);else if(q.type==='nodes')qNodes(q);else if(q.type==='mapquiz')qMapQuiz(q);else qNext(q)}
+function renderStored(q){if(q.type==='stop')qStop(q);else if(q.type==='ends')qEnds(q);else if(q.type==='nodes')qNodes(q);else if(q.type==='connections')qConnections(q);else if(q.type==='mapquiz')qMapQuiz(q);else if(q.type==='images')qImages(q);else qNext(q)}
+function qRepeat(){if(!mistakes.length){quiz.innerHTML=`<div class="question">Keine offenen Fehler</div><div class="sub">Falsch beantwortete Fragen landen automatisch hier.</div>`;current=null;return}let q=mistakes.shift();save();renderStored(q)}
+function qSkipped(){if(!skippedQuestions.length){quiz.innerHTML=`<div class="question">Keine übersprungenen Fragen</div><div class="sub">Übersprungene Fragen kannst du hier gezielt nochmals üben.</div>`;current=null;return}let q=skippedQuestions.shift();save();renderStored(q)}
 function qExam(){if(examLeft<=0){quiz.innerHTML=`<div class="kicker">Prüfung beendet</div><div class="question">${examScore} / 10 richtig</div><div class="sub">Starte eine neue 10-Fragen-Prüfung.</div><button class="btn primary" onclick="examLeft=10;examScore=0;qExam()">Neue Prüfung</button>`;return}let t=sample(['ends','next']);let old=mode;mode=t;let before=score; if(t==='ends')qEnds();else qNext(); let oldChoose=window.choose; window.choose=function(el,val,ans){if(document.querySelector('.option.correct,.option.wrong'))return;let ok=val===ans;if(ok)examScore++;examLeft--;oldChoose(el,val,ans);setTimeout(()=>{mode='exam';qExam()},650)}}
 
 
