@@ -408,7 +408,31 @@ function qEnds(q=null){
   const make=()=>{let l=q?.line||sample(LINES),r=ROUTES[l],ans=`${r[0]} ↔ ${r.at(-1)}`;let opts=shuffle([ans,...shuffle(LINES.filter(x=>x!==l)).slice(0,3).map(x=>`${ROUTES[x][0]} ↔ ${ROUTES[x].at(-1)}`)]);current={type:'ends',line:l,answer:ans};
     const linked=LINKED_LINES[l]?`<div class="sub">🔗 Linie ${l} ist mit Linie ${LINKED_LINES[l].partner} verknüpft · Gesamtverbindung: ${LINKED_LINES[l].ends}</div>`:'';
     single(`TRAM ${badge(l)}${linked}`,`Welche Endpunkte gehören zu dieser Linie?`,opts,ans)};if(q)make();else avoidRepeat(make)}
-function qNext(q=null){const make=()=>{let l=q?.line||sample(LINES),r=ROUTES[l],i=q?.i??Math.floor(Math.random()*(r.length-1)),ans=r[i+1];let pool=[...new Set(Object.values(ROUTES).flat())].filter(x=>x!==ans&&x!==r[i]);let opts=shuffle([ans,...shuffle(pool).slice(0,3)]);current={type:'next',line:l,i,answer:ans};single(`TRAM ${badge(l)}`,`Was kommt Richtung <strong>${r.at(-1)}</strong> direkt nach <strong>${r[i]}</strong>?`,opts,ans)};if(q)make();else avoidRepeat(make)}
+// Für das Quiz „Nächster Halt“ gelten die tatsächlichen Abschnitte der jeweiligen Liniennummer.
+// Bei verknüpften Linien endet die Frage dort, wo die Liniennummer wechselt.
+const NEXT_ROUTES={...ROUTES,
+  "4":ROUTES["4"].slice(0,16), // Rehalp -> Bahnhofstrasse/HB, danach Linie 13
+  "13":ROUTES["13"].slice(0,13), // Albisgütli -> Bahnhofstrasse/HB, danach Linie 4
+  "6":ROUTES["6"].slice(0,11), // Zoo -> Bahnhofplatz/HB, danach Linie 14
+  "14":ROUTES["14"].slice(0,12), // Triemli -> Bahnhofplatz/HB, danach Linie 6
+  "11":ROUTES["11"].slice(0,13), // Tiefenbrunnen -> Bahnhofstrasse/HB via Paradeplatz
+  "15":[
+    "Zürich, Bahnhofstrasse/HB",
+    "Zürich, Central",
+    "Zürich, Rudolf-Brun-Brücke",
+    "Zürich, Rathaus",
+    "Zürich, Helmhaus",
+    "Zürich, Bellevue",
+    "Zürich, Opernhaus",
+    "Zürich, Kreuzstrasse",
+    "Zürich, Feldeggstrasse",
+    "Zürich, Höschgasse",
+    "Zürich, Fröhlichstrasse",
+    "Zürich, Wildbachstrasse",
+    "Zürich Tiefenbrunnen, Bahnhof"
+  ]
+};
+function qNext(q=null){const make=()=>{let l=q?.line||sample(LINES),r=NEXT_ROUTES[l],i=q?.i??Math.floor(Math.random()*(r.length-1)),ans=r[i+1];let pool=[...new Set(Object.values(NEXT_ROUTES).flat())].filter(x=>x!==ans&&x!==r[i]);let opts=shuffle([ans,...shuffle(pool).slice(0,3)]);current={type:'next',line:l,i,answer:ans};single(`TRAM ${badge(l)}`,`Was kommt Richtung <strong>${r.at(-1)}</strong> direkt nach <strong>${r[i]}</strong>?`,opts,ans)};if(q)make();else avoidRepeat(make)}
 function single(k,q,opts,ans){quiz.innerHTML=`<div class="kicker">${k}</div><div class="question">${q}</div><div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(ans)})'>${o}</button>`).join('')}</div><div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div></div>`}
 function choose(el,val,ans){if(current?.answered)return;let ok=val===ans;current.answered=true;register(ok,current);el.classList.add(ok?'correct':'wrong');[...document.querySelectorAll('.option')].forEach(x=>{if(x.textContent===ans)x.classList.add('correct')});showFb(ok,`Richtig: <b>${ans}</b>`)}
 function showFb(ok,text){let f=document.getElementById('fb');f.className='feedback '+(ok?'ok':'bad');f.innerHTML=ok?text:`Noch nicht. ${text}`}
