@@ -23,7 +23,7 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 .question{font-size:24px;font-weight:850;line-height:1.18;margin:7px 0 16px} .sub{color:var(--muted);margin-bottom:14px}
 .options{display:grid;gap:9px} .option{padding:13px 14px;text-align:left;font-size:16px} .option.correct{background:#e8f7ef;border-color:#77c89e} .option.wrong{background:#fff0f0;border-color:#e6a0a3}
 .pills{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.pill{width:100%;aspect-ratio:1 / 1;height:auto;min-height:0;padding:0;display:flex;align-items:center;justify-content:center;font-weight:750;position:relative;box-sizing:border-box}.pill.sel{outline:none}.pill.sel .badge{background:#0a64b7;color:#fff;border-color:#0a64b7}
-.node-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;align-items:stretch}.nodepill{width:100%;aspect-ratio:auto;min-height:82px;height:auto;padding:10px 8px;display:flex;align-items:center;justify-content:center;text-align:center;white-space:normal;line-height:1.16;font-size:15px;font-weight:780;overflow-wrap:anywhere;word-break:break-word;hyphens:auto;border-radius:16px}.nodepill.sel{background:var(--blue);color:#fff;border-color:var(--blue)}
+.node-grid{display:grid;grid-template-columns:1fr;gap:7px;align-items:stretch}.nodepill{width:100%;aspect-ratio:auto;min-height:58px;height:auto;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;white-space:normal;line-height:1.2;font-size:16px;font-weight:750;overflow-wrap:anywhere;word-break:normal;hyphens:auto;border-radius:13px;color:var(--ink);background:#fff}.node-label{min-width:0}.node-radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--blue);background:#fff;flex:none}.nodepill.sel{background:#eef5fb;color:var(--ink);border-color:#8bbbe6}.nodepill.sel .node-radio{background:var(--blue);box-shadow:inset 0 0 0 4px #eef5fb}.nodepill.result-correct{background:#eef5fb;border-color:#8bbbe6;color:var(--ink)}.nodepill.result-correct .node-radio{background:#0a64b7;border-color:#0a64b7}.nodepill.result-wrong{background:#fff0f0;border-color:#e6a0a3;color:var(--ink)}.nodepill.result-wrong .node-radio{background:#e3262e;border-color:#e3262e}.nodepill.result-missed{background:#f3f3f3;border-color:#c8c8c8;color:var(--ink)}.nodepill.result-missed .node-radio{background:#111;border-color:#111}
 /* Auswertung Mehrfachauswahl: Nur die Linienkreise ändern ihre Farbe.
    Die äusseren Auswahlfelder bleiben unverändert. */
 .pill.result-state{background:#fff;color:inherit;border-color:var(--line);}
@@ -41,11 +41,12 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 .connection-legend-title.correct{color:#0a64b7}
 .connection-legend-title.wrong{color:#e3262e}
 .connection-legend-text{font-size:12px;line-height:1.3;color:var(--ink)}
-.nodepill.sel{background:var(--blue);color:#fff;border-color:var(--blue)}.nodepill.correct{background:var(--blue);color:#fff;border-color:var(--blue)}.nodepill.wrong{background:#c62f35;color:#fff;border-color:#c62f35}
+
 .badge.result-correct{background:#0a64b7;color:#fff;border-color:#0a64b7}.badge.result-wrong{background:#c62f35;color:#fff;border-color:#c62f35}.badge.result-missed{background:#111;color:#fff;border-color:#111}
 .node-result{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-weight:800;margin:3px 3px 3px 0;color:#fff}.node-result.result-correct{background:#0a64b7}.node-result.result-wrong{background:#c62f35}.node-result.result-missed{background:#111}.node-results{margin-top:8px}.result-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--ink)}.result-legend span{display:inline-flex;align-items:center;gap:5px}.legend-dot{width:13px;height:13px;border-radius:50%;display:inline-block}.legend-dot.result-correct{background:#0a64b7}.legend-dot.result-wrong{background:#c62f35}.legend-dot.result-missed{background:#111}
 .badge{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#0a64b7;background:#fff;border:2px solid #0a64b7;font-weight:900;flex:none;box-shadow:none}
 .controls{display:flex;gap:9px;justify-content:space-between;align-items:center;margin-top:17px;flex-wrap:wrap}.control-left{display:flex;gap:9px;align-items:center;flex-wrap:wrap} .btn{padding:12px 14px;font-weight:800} .btn.primary{background:var(--blue);color:white;border-color:var(--blue)}
+.quiz-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:17px}.quiz-nav .btn{width:100%;min-width:0;padding:11px 6px;font-size:14px}.quiz-nav .btn:disabled{opacity:.38;cursor:default}.quiz-check{display:block;width:100%;margin-top:9px}
 .feedback{margin-top:14px;padding:12px;border-radius:12px;display:none} .feedback.ok{display:block;background:#e8f7ef;color:#075c32} .feedback.bad{display:block;background:#fff0f0;color:#8d171b}
 .route{background:#eef5fb;padding:14px;border-radius:14px;line-height:1.65;margin-top:10px}
 .footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 8px}
@@ -58,7 +59,7 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 .exam-message{margin:14px 0;padding:15px 16px;border-radius:14px;background:#eef5fb;border:1px solid #cfe1f1;font-weight:800;line-height:1.35}
 .exam-breakdown{margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}.exam-breakdown-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px}.exam-breakdown-row+.exam-breakdown-row{border-top:1px solid var(--line)}.exam-breakdown-row b{color:var(--blue);white-space:nowrap}
 
-@media(max-width:520px){.connection-legend-item{grid-template-columns:34px minmax(0,1fr) minmax(0,1.55fr);gap:9px;padding:10px}.connection-legend-icon{width:30px;height:30px}.connection-legend-title{font-size:12px}.connection-legend-text{font-size:11px}.node-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.nodepill{min-height:74px;font-size:14px;padding:9px 7px}}
+@media(max-width:520px){.connection-legend-item{grid-template-columns:34px minmax(0,1fr) minmax(0,1.55fr);gap:9px;padding:10px}.connection-legend-icon{width:30px;height:30px}.connection-legend-title{font-size:12px}.connection-legend-text{font-size:11px}.node-grid{grid-template-columns:1fr;gap:6px}.nodepill{min-height:56px;font-size:15px;padding:10px 12px}.quiz-nav{gap:6px}.quiz-nav .btn{font-size:12px;padding:10px 4px}}
 @media(min-width:720px){}
 
 .mapwrap{position:relative;width:100%;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;touch-action:manipulation}
@@ -90,7 +91,7 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 <button class="tab" data-mode="next">Nächster Halt</button>
 <button class="tab" data-mode="images">Bilder-Quiz</button>
 <button class="tab" data-mode="skipped">Übersprungene üben</button>
-<button class="tab" data-mode="repeat">Fehler wiederholen</button>
+<button class="tab" data-mode="repeat">Nochmals üben</button>
 <button class="tab" data-mode="exam">Prüfung</button>
 </div>
 <main class="card"><div id="quiz"></div></main>
@@ -121,6 +122,7 @@ const EXAM_TYPES=['ends','stop','nodes','connections','mapquiz','next','images']
 const EXAM_TOTAL=EXAM_PER_TYPE*EXAM_TYPES.length;
 const EXAM_LABELS={ends:'Linie → Endpunkte',stop:'Haltestelle → Linien',nodes:'Knotenpunkte',connections:'Von A → B',mapquiz:'Karten-Quiz',next:'Nächster Halt',images:'Bilder-Quiz'};
 let mistakes=[],skippedQuestions=[],lastQuestionKey='';
+let quizTrail=[],quizTrailIndex=-1;
 let questionHistory={stop:[],ends:[],nodes:[],connections:[],next:[],images:[],imageStops:[],mapquiz:[],linked:[]};
 let examHistory=[];
 const STORAGE_KEY='tramTrainerV4';
@@ -179,7 +181,7 @@ function pushUnique(list,q,max=350){
   const idx=list.findIndex(x=>questionKey(x)===key);if(idx>=0)list.splice(idx,1);
   list.push({...q});if(list.length>max)list.splice(0,list.length-max);
 }
-function register(ok,q){attempts++;if(ok)score++;else if(q)pushUnique(mistakes,q);save()}
+function register(ok,q){if(q?.reviewOnly)return;attempts++;if(ok)score++;else if(q)pushUnique(mistakes,q);save()}
 function rememberCurrent(){lastQuestionKey=questionKey(current)}
 function recordHistory(type,key,limit=HISTORY_LIMITS[type]||12){
   if(!questionHistory[type])questionHistory[type]=[];
@@ -202,9 +204,36 @@ function freshImage(){
   if(!pool.length){questionHistory.images=[];pool=[...IMAGE_QUIZ]}
   const item=sample(pool);recordHistory('images',item.src);recordHistory('imageStops',item.stop);return item;
 }
-function next(){
-  if(current) rememberCurrent();
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+function trailSnapshot(q){
+  if(!q)return null;
+  const snap=JSON.parse(JSON.stringify(q));
+  delete snap.answered;delete snap.reviewOnly;
+  return snap;
+}
+function isTrailMode(m){return ['stop','ends','nodes','connections','next','images','repeat','skipped','mapquiz'].includes(m)}
+function addTrailCurrent(){
+  if(examActive||!current||!isTrailMode(mode)||current.reviewOnly)return;
+  const snap=trailSnapshot(current);if(!snap)return;
+  quizTrail=quizTrail.slice(0,quizTrailIndex+1);
+  quizTrail.push(snap);quizTrailIndex=quizTrail.length-1;
+  if(quizTrail.length>60){quizTrail.shift();quizTrailIndex=quizTrail.length-1}
+}
+function renderTrailAt(index){
+  if(index<0||index>=quizTrail.length)return false;
+  quizTrailIndex=index;
+  renderStored({...quizTrail[index]});
+  if(current){current.reviewOnly=true;current.answered=false}
+  return true;
+}
+function goBackQuestion(){
+  if(examActive||mode==='exam')return;
+  if(quizTrailIndex>0)renderTrailAt(quizTrailIndex-1);
+}
+function quizControls(checkAction=''){
+  const backDisabled=quizTrailIndex<=0?' disabled':'';
+  return `<div class="quiz-nav"><button class="btn" onclick="goBackQuestion()"${backDisabled}>← Zurück</button><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div>${checkAction?`<button class="btn primary quiz-check" onclick="${checkAction}">Prüfen</button>`:''}`;
+}
+function generateCurrent(){
   if(mode==='stop')qStop();
   else if(mode==='ends')qEnds();
   else if(mode==='nodes')qNodes();
@@ -217,7 +246,15 @@ function next(){
   else if(mode==='map')qMap();
   else qExam();
 }
+function next(){
+  if(current) rememberCurrent();
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+  if(!examActive&&isTrailMode(mode)&&quizTrailIndex>=0&&quizTrailIndex<quizTrail.length-1){renderTrailAt(quizTrailIndex+1);return}
+  generateCurrent();
+  if(!examActive&&isTrailMode(mode)&&current)addTrailCurrent();
+}
 function skipQuestion(){
+  if(current?.reviewOnly){next();return}
   if(current && !current.answered){skippedCount++;pushUnique(skippedQuestions,current);current.answered=true;save()}
   next();
 }
@@ -231,8 +268,7 @@ function qMapQuiz(q=null){
     <div id="mapwrap" class="mapwrap" onclick="mapPick(event)">
       <img src="tramnetz-quiz-ohne-ortschaften.png" alt="Tramliniennetz Zürich 2026 – Quizkarte">
     </div>
-    <div id="fb" class="feedback"></div>
-    <div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div></div>`;
+    <div id="fb" class="feedback"></div>${quizControls()}`;
 }
 
 function mapPick(ev){
@@ -310,7 +346,7 @@ function qStop(q=null){
   const correct=linesAt(stop);current={type:'stop',stop,correct};
   quiz.innerHTML=`<div class="kicker">Mehrfachauswahl</div><div class="question">Welche Tramlinien halten am <strong>${stop}</strong>?</div><div class="sub">Alle passenden Linien wählen.</div>
   <div class="pills">${LINES.map(l=>`<button class="pill" data-line="${l}" onclick="this.classList.toggle('sel')">${badge(l)}</button>`).join('')}</div>
-  <div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div><button class="btn primary" onclick="checkStop()">Prüfen</button></div>`;
+  <div id="fb" class="feedback"></div>${quizControls('checkStop()')}`;
 }
 function checkStop(){
   if(current?.answered)return;
@@ -361,16 +397,10 @@ function qNodes(q=null){
     <div class="question">Welche wichtigen Knotenpunkte befinden sich auf Linie ${badge(line)}?</div>
     <div class="sub">Wähle alle passenden Knotenpunkte.</div>
     <div class="node-grid">
-      ${choices.map((n,i)=>`<button class="pill nodepill" data-node="${i}" data-name="${encodeURIComponent(n)}" onclick="this.classList.toggle('sel')">${displayNodeName(n)}</button>`).join('')}
+      ${choices.map((n,i)=>`<button class="pill nodepill" data-node="${i}" data-name="${encodeURIComponent(n)}" onclick="this.classList.toggle('sel')"><span class="node-label">${displayNodeName(n)}</span><span class="node-radio" aria-hidden="true"></span></button>`).join('')}
     </div>
     <div id="fb" class="feedback"></div>
-    <div class="controls">
-      <div class="control-left" style="display:flex;gap:9px;flex-wrap:wrap">
-        <button class="btn" onclick="skipQuestion()">Überspringen →</button>
-        <button class="btn" onclick="next()">Weiter →</button>
-      </div>
-      <button class="btn primary" onclick="checkNodes()">Prüfen</button>
-    </div>`;
+    ${quizControls('checkNodes()')}`;
 }
 
 function checkNodes(){
@@ -389,8 +419,11 @@ function checkNodes(){
     const n=decodeURIComponent(el.dataset.name);
     const isCorrect=current.correct.includes(n);
     const isSelected=el.classList.contains('sel');
-    if(isCorrect) el.classList.add('correct');
-    if(isSelected && !isCorrect) el.classList.add('wrong');
+    el.classList.remove('sel');
+    el.disabled=true;
+    if(isSelected&&isCorrect)el.classList.add('result-correct');
+    else if(isSelected&&!isCorrect)el.classList.add('result-wrong');
+    else if(!isSelected&&isCorrect)el.classList.add('result-missed');
   });
 
   const all=[...new Set([...selected,...current.correct])].sort((a,b)=>displayNodeName(a).localeCompare(displayNodeName(b),'de'));
@@ -417,7 +450,7 @@ function qImages(q=null){
   quiz.innerHTML=`<div class="kicker">Bilder-Quiz</div><div class="question">Welche Haltestelle ist auf diesem Bild zu sehen?</div>
     <img src="${item.src}" alt="Haltestellenfoto" data-original-src="${item.src}" onerror="if(!this.dataset.retried){this.dataset.retried='1';this.src=this.dataset.originalSrc+'?refresh=20260820b';}else{this.style.display='none';this.insertAdjacentHTML('afterend','<div class=&quot;feedback bad&quot;>Bild konnte nicht geladen werden. Bitte einmal online neu laden.</div>');}" style="display:block;width:100%;max-height:430px;object-fit:contain;border-radius:14px;border:1px solid var(--line);background:#f5f5f5;margin-bottom:14px">
     <div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(item.stop)})'>${o}</button>`).join('')}</div>
-    <div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div></div>`;
+    <div id="fb" class="feedback"></div>${quizControls()}`;
 }
 
 const CONNECTION_PAIRS=[
@@ -451,7 +484,7 @@ function qConnections(q=null){
     <div class="sub">Wähle alle Linien, mit denen du beide Haltestellen direkt erreichst.</div>
     <div class="pills">${LINES.map(l=>`<button class="pill" data-line="${l}" onclick="this.classList.toggle('sel')">${badge(l)}</button>`).join('')}</div>
     <div id="fb" class="feedback"></div>
-    <div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div><button class="btn primary" onclick="checkConnections()">Prüfen</button></div>`;
+    ${quizControls('checkConnections()')}`;
 }
 function checkConnections(){
   if(current?.type!=='connections'||current?.answered)return;
@@ -523,7 +556,7 @@ function qNext(q=null){
   const opts=shuffle([ans,...shuffle(pool).slice(0,3)]);current={type:'next',line:l,i,answer:ans};
   single(`TRAM ${badge(l)}`,`Was kommt Richtung <strong>${r.at(-1)}</strong> direkt nach <strong>${r[i]}</strong>?`,opts,ans);
 }
-function single(k,q,opts,ans){quiz.innerHTML=`<div class="kicker">${k}</div><div class="question">${q}</div><div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(ans)})'>${o}</button>`).join('')}</div><div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div></div>`}
+function single(k,q,opts,ans){quiz.innerHTML=`<div class="kicker">${k}</div><div class="question">${q}</div><div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(ans)})'>${o}</button>`).join('')}</div><div id="fb" class="feedback"></div>${quizControls()}`}
 function choose(el,val,ans){
   if(current?.answered)return;
   const inExam=examActive&&mode==='exam';
@@ -536,8 +569,8 @@ function choose(el,val,ans){
 }
 function showFb(ok,text){let f=document.getElementById('fb');f.className='feedback '+(ok?'ok':'bad');f.innerHTML=ok?text:`Noch nicht. ${text}`}
 function renderStored(q){if(q.type==='stop')qStop(q);else if(q.type==='ends')qEnds(q);else if(q.type==='linked')qLinked(q);else if(q.type==='nodes')qNodes(q);else if(q.type==='connections')qConnections(q);else if(q.type==='mapquiz')qMapQuiz(q);else if(q.type==='images')qImages(q);else qNext(q)}
-function qRepeat(){if(!mistakes.length){quiz.innerHTML=`<div class="question">Keine offenen Fehler</div><div class="sub">Falsch beantwortete Fragen landen automatisch hier.</div>`;current=null;return}let q=mistakes.shift();save();renderStored(q)}
-function qSkipped(){if(!skippedQuestions.length){quiz.innerHTML=`<div class="question">Keine übersprungenen Fragen</div><div class="sub">Übersprungene Fragen kannst du hier gezielt nochmals üben.</div>`;current=null;return}let q=skippedQuestions.shift();save();renderStored(q)}
+function qRepeat(){if(!mistakes.length){quiz.innerHTML=`<div class="question">Alles erledigt</div><div class="sub">Fragen, die noch nicht ganz gesessen haben, landen automatisch hier.</div>${quizControls()}`;current=null;return}let q=mistakes.shift();save();renderStored(q)}
+function qSkipped(){if(!skippedQuestions.length){quiz.innerHTML=`<div class="question">Keine übersprungenen Fragen</div><div class="sub">Übersprungene Fragen kannst du hier gezielt nochmals üben.</div>${quizControls()}`;current=null;return}let q=skippedQuestions.shift();save();renderStored(q)}
 function stopExamTimer(){
   if(examTimerId){clearInterval(examTimerId);examTimerId=null}
 }
@@ -576,6 +609,7 @@ function decorateExamQuestion(){
   const n=EXAM_TOTAL-examLeft+1;
   const typeDone=(examByType[examCurrentType]?.done||0)+1;
   quiz.insertAdjacentHTML('afterbegin',`<div class="exam-head"><span>Frage ${n} von ${EXAM_TOTAL} · ${EXAM_LABELS[examCurrentType]} ${typeDone}/${EXAM_PER_TYPE}</span><span id="examTimer" class="exam-timer">1:00</span></div><div class="exam-progress"><span style="width:${((n-1)/EXAM_TOTAL)*100}%"></span></div>`);
+  quiz.querySelectorAll('.quiz-nav,.quiz-check').forEach(x=>x.remove());
   quiz.querySelectorAll('.control-left').forEach(x=>x.remove());
   const controls=quiz.querySelector('.controls');if(controls&&!controls.children.length)controls.remove();
 }
@@ -629,7 +663,7 @@ function finishExam(){
   const pct=Math.round(examScore/EXAM_TOTAL*100),wrong=EXAM_TOTAL-examScore;
   recordExamResult(pct);
   const breakdown=EXAM_TYPES.map(t=>`<div class="exam-breakdown-row"><span>${EXAM_LABELS[t]}</span><b>${examByType[t]?.correct||0} / ${EXAM_PER_TYPE}</b></div>`).join('');
-  quiz.innerHTML=`<div class="kicker">Prüfung beendet</div><div class="question">${examScore} / ${EXAM_TOTAL} richtig</div><div class="exam-message">${examMessage(pct)}</div><div class="exam-end-grid"><div class="exam-end-stat"><b>${pct}%</b>Trefferquote</div><div class="exam-end-stat"><b>${wrong}</b>falsch</div><div class="exam-end-stat"><b>${examTimedOut}</b>Zeit abgelaufen</div></div><div class="sub"><strong>Auswertung nach Quiz:</strong></div><div class="exam-breakdown">${breakdown}</div><div class="controls"><button class="btn" onclick="mode='repeat';next()">Fehler wiederholen</button><button class="btn primary" onclick="startExam()">Neue Prüfung</button></div>`;
+  quiz.innerHTML=`<div class="kicker">Prüfung beendet</div><div class="question">${examScore} / ${EXAM_TOTAL} richtig</div><div class="exam-message">${examMessage(pct)}</div><div class="exam-end-grid"><div class="exam-end-stat"><b>${pct}%</b>Trefferquote</div><div class="exam-end-stat"><b>${wrong}</b>falsch</div><div class="exam-end-stat"><b>${examTimedOut}</b>Zeit abgelaufen</div></div><div class="sub"><strong>Auswertung nach Quiz:</strong></div><div class="exam-breakdown">${breakdown}</div><div class="controls"><button class="btn" onclick="mode='repeat';next()">Nochmals üben</button><button class="btn primary" onclick="startExam()">Neue Prüfung</button></div>`;
 }
 function qExam(){
   stopExamTimer();
@@ -651,6 +685,7 @@ function qExam(){
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
   stopExamTimer();
   const target=b.dataset.mode;
+  quizTrail=[];quizTrailIndex=-1;current=null;
   if(target==='exam'){startExam();return}
   examActive=false;mode=target;next();
 });
