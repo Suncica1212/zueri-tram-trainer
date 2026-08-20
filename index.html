@@ -48,6 +48,7 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 .feedback{margin-top:14px;padding:12px;border-radius:12px;display:none} .feedback.ok{display:block;background:#e8f7ef;color:#075c32} .feedback.bad{display:block;background:#fff0f0;color:#8d171b}
 .route{background:#eef5fb;padding:14px;border-radius:14px;line-height:1.65;margin-top:10px}
 .footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 8px}
+.reset-progress{margin-top:12px;border:1px solid #ffffff66;background:#ffffff14;color:#fff;border-radius:11px;padding:8px 11px;font-size:12px;font-weight:750;cursor:pointer} .reset-progress:active{background:#ffffff25}
 
 @media(max-width:520px){.connection-legend-item{grid-template-columns:34px minmax(0,1fr) minmax(0,1.55fr);gap:9px;padding:10px}.connection-legend-icon{width:30px;height:30px}.connection-legend-title{font-size:12px}.connection-legend-text{font-size:11px}}
 @media(min-width:720px){}
@@ -70,7 +71,7 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 </head>
 <body><div class="app">
 <header><div class="kicker" style="color:#d9edff">Private Lern-App</div><h1>Züri Tram Trainer</h1><p>2026 · inkl. Baustellenlinien 50 & 51</p>
-<div class="stats"><div class="stat"><b id="score">0</b>richtig</div><div class="stat"><b id="hitRate">0%</b>Trefferquote</div><div class="stat"><b id="skipRate">0%</b>übersprungen</div></div></header>
+<div class="stats"><div class="stat"><b id="score">0</b>richtig</div><div class="stat"><b id="hitRate">0%</b>Trefferquote</div><div class="stat"><b id="skipRate">0%</b>übersprungen</div></div><button class="reset-progress" onclick="resetProgress()">Fortschritt zurücksetzen</button></header>
 <div class="tabs">
 <button class="tab active" data-mode="map">Liniennetz</button>
 <button class="tab" data-mode="ends">Linie → Endpunkte</button>
@@ -88,14 +89,14 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 <div class="footer">Private Lernhilfe · nicht offiziell von VBZ/ZVV.</div>
 </div>
 <script>
-const ROUTES={"2":["Schlieren, Geissweid","Schlieren, Zentrum/Bahnhof","Wagonsfabrik","Gasometerbrücke","Mülligen","Micafil","Farbhof","Bachmattstrasse","Lindenplatz","Grimselstrasse","Kappeli","Freihofstrasse","Letzigrund","Albisriederplatz","Zypressenstrasse","Lochergut","Kalkbreite/Bhf. Wiedikon","Bezirksgebäude","Stauffacher","Sihlstrasse","Paradeplatz","Kantonalbank","Bürkliplatz","Bellevue","Bhf. Stadelhofen","Kreuzplatz","Englischviertelstrasse","Römerhof","Hölderlinstrasse","Klusplatz"],"3":["Albisrieden","Fellenbergstrasse","Siemens","Hubertus","Altes Krematorium","Albisriederplatz","Zypressenstrasse","Lochergut","Kalkbreite/Bhf. Wiedikon","Bezirksgebäude","Stauffacher","Sihlpost/HB","Löwenplatz","Bahnhofplatz/HB","Central","Neumarkt","Kunsthaus","Hottingerplatz","Römerhof","Hölderlinstrasse","Klusplatz"],"4":["Bahnhofstrasse/HB","Central","Rudolf-Brun-Brücke","Rathaus","Helmhaus","Bellevue","Bhf. Stadelhofen","Kreuzplatz","Signaustrasse","Hegibachplatz","Hedwigsteig","Wetlistrasse","Burgwies","Balgrist","Friedhof Enzenbühl","Rehalp"],"5":["Laubegg","Saalsporthalle","Sihlcity Nord","Waffenplatzstrasse","Bhf. Enge/Bederstrasse","Tunnelstrasse","Stockerstrasse","Paradeplatz","Kantonalbank","Bürkliplatz","Bellevue","Bhf. Stadelhofen"],"6":["Zoo","Susenbergstrasse","Zürichbergstrasse","Toblerplatz","Kirche Fluntern","Voltastrasse","Platte","ETH/Universitätsspital","Haldenegg","Central"],"7":["Bahnhof Stettbach","Mattenhof","Probstei","Glattwiesen","Roswiesen","Schwamendingerplatz","Überlandpark","Waldgarten","Tierspital","Milchbuck","Guggachstrasse","Schaffhauserplatz","Röslistrasse","Ottikerstrasse","Sonneggstrasse","Haldenegg","Central","Bahnhofstrasse/HB","Rennweg","Paradeplatz","Stockerstrasse","Tunnelstrasse","Bahnhof Enge","Museum Rietberg","Brunaustrasse","Billoweg","Bhf. Wollishofen/Staubstr.","Renggerstrasse","Morgental","Butzenstrasse","Wollishoferplatz"],"8":["Hardturm","Bernoulli-Häuser","Fischerweg","Förrlibuckstrasse","Escher-Wyss-Platz","Schiffbau","Bhf. Hardbrücke","Hardplatz","Güterbahnhof","Bäckeranlage","Helvetiaplatz","Stauffacher","Bahnhof Selnau","Tunnelstrasse","Bhf. Enge","Rentenanstalt","Bürkliplatz","Bellevue","Kunsthaus","Kantonsschule","Platte","Voltastrasse","Kirche Fluntern","Toblerplatz","Zürichbergstrasse","Susenbergstrasse","Zoo"],"9":["Hirzenbach","Altried","Luchswiesen","Luegisland","Heerenwiesen","Schwamendingerplatz","Überlandpark","Waldgarten","Tierspital","Milchbuck","Universität Irchel","Langmauerstrasse","Letzistrasse","Kinkelstrasse","Seilbahn Rigiblick","Winkelriedstrasse","Haldenbach","ETH/Universitätsspital","Kantonsschule","Kunsthaus","Bellevue","Bürkliplatz","Kantonalbank","Paradeplatz","Sihlstrasse","Stauffacher","Werd","Bhf. Wiedikon","Schmiede Wiedikon","Goldbrunnenplatz","Talwiesenstrasse","Heuried","Schaufelbergerstrasse","Triemli"],"10":["Zürich Flughafen, Fracht","Zürich Flughafen, Bahnhof","Kloten Balsberg, Bahnhof","Glattbrugg, Unterriet","Rümlang, Bäuler","Glattbrugg, Bahnhof","Glattpark, Lindberghplatz","Glattpark","Oerlikerhus","Leutschenbach","Bhf. Oerlikon Ost","Sternen Oerlikon","Salersteig","Berninaplatz","Hirschwiesenstrasse","Milchbuck","Universität Irchel","Langmauerstrasse","Letzistrasse","Kinkelstrasse","Seilbahn Rigiblick","Winkelriedstrasse","Haldenbach","ETH/Universitätsspital","Haldenegg","Central","Bahnhofplatz/HB"],"11":["Bhf. Tiefenbrunnen","Wildbachstrasse","Fröhlichstrasse","Höschgasse","Feldeggstrasse","Kreuzstrasse","Opernhaus","Bellevue","Bürkliplatz","Kantonalbank","Paradeplatz","Rennweg","Bahnhofstrasse/HB"],"12":["Zürich Flughafen, Fracht","Zürich Flughafen, Bahnhof","Kloten Balsberg, Bahnhof","Glattbrugg, Unterriet","Rümlang, Bäuler","Glattbrugg, Bahnhof","Glattpark, Lindberghplatz","Glattpark","Zürich, Fernsehstudio","Zürich, Auzelg","Wallisellen, Herti","Wallisellen, Belair","Wallisellen, Bahnhof","Wallisellen, Glatt (Tram)","Wallisellen, Neugut","Dübendorf, Am Ring","Dübendorf, Ringwiesen","Zürich, Bahnhof Stettbach"],"13":["Bahnhofstrasse/HB","Rennweg","Paradeplatz","Stockerstrasse","Tunnelstrasse","Bhf. Enge/Bederstrasse","Waffenplatzstrasse","Sihlcity Nord","Saalsporthalle","Laubegg","Uetlihof","Strassenverkehrsamt","Albisgüetli"],"14":["Bahnhofplatz/HB","Löwenplatz","Sihlpost/HB","Stauffacher","Werd","Bhf. Wiedikon","Schmiede Wiedikon","Goldbrunnenplatz","Talwiesenstrasse","Heuried","Schaufelbergerstrasse","Triemli"],"15":["Bahnhofstrasse/HB","Central","Rudolf-Brun-Brücke","Rathaus","Helmhaus","Bellevue","Opernhaus","Kreuzstrasse","Feldeggstrasse","Höschgasse","Fröhlichstrasse","Wildbachstrasse","Bhf. Tiefenbrunnen"],"16":["Laubegg","Saalsporthalle","Sihlcity Nord","Waffenplatzstrasse","Zürich Enge, Bahnhof/Bederstr.","Tunnelstrasse","Stockerstrasse","Paradeplatz","Rennweg","Bahnhofstrasse/HB","Central","Haldenegg","Sonneggstrasse","Ottikerstrasse","Röslistrasse","Schaffhauserplatz","Guggachstrasse","Milchbuck"],"17":["Werdhölzli","Bändliweg","Grünaustrasse","Tüffenwies","Hardhof","Hardturm","Bernoulli-Häuser","Fischerweg","Förrlibuckstrasse","Escher-Wyss-Platz","Löwenbräu","Quellenstrasse","Limmatplatz","Museum für Gestaltung","Sihlquai/HB","Stampfenbachplatz","Beckenhof","Kronenstrasse","Schaffhauserplatz","Laubiweg","Bucheggplatz"],"50":["Frankental","Winzerstrasse","Wartau","Zwielplatz","Meierhofplatz","Schwert","Alte Trotte","Eschergutweg","Waidfussweg","Wipkingerplatz","Escher-Wyss-Platz","Löwenbräu","Quellenstrasse","Limmatplatz","Museum für Gestaltung","Sihlquai/HB","Stampfenbachplatz","Beckenhof","Kronenstrasse","Schaffhauserplatz","Laubiweg","Bucheggplatz","Brunnenhof","Bad Allenmoos","Regensbergbrücke","Bhf. Oerlikon","Sternen Oerlikon","Messe/Hallenstadion","Leutschenbach","Oerlikerhus","Glattpark","Fernsehstudio","Auzelg"],"51":["Bhf. Altstetten Nord","Würzgraben","Aargauerstrasse","Sportweg","Toni-Areal","Technopark","Schiffbau","Escher-Wyss-Platz","Löwenbräu","Quellenstrasse","Limmatplatz","Museum für Gestaltung","Sihlquai/HB","Stampfenbachplatz","Beckenhof","Kronenstrasse","Schaffhauserplatz","Guggachstrasse","Milchbuck","Hirschwiesenstrasse","Berninaplatz","Salersteig","Sternen Oerlikon","Bhf. Oerlikon Ost","Felsenrainstrasse","Seebacherplatz","Seebach"]};
+const ROUTES={"2":["Schlieren, Geissweid","Schlieren, Zentrum/Bahnhof","Wagonsfabrik","Gasometerbrücke","Mülligen","Micafil","Farbhof","Bachmattstrasse","Lindenplatz","Grimselstrasse","Kappeli","Freihofstrasse","Letzigrund","Albisriederplatz","Zypressenstrasse","Lochergut","Kalkbreite/Bhf. Wiedikon","Bezirksgebäude","Stauffacher","Sihlstrasse","Paradeplatz","Kantonalbank","Bürkliplatz","Bellevue","Bhf. Stadelhofen","Kreuzplatz","Englischviertelstrasse","Römerhof","Hölderlinstrasse","Klusplatz"],"3":["Albisrieden","Fellenbergstrasse","Siemens","Hubertus","Altes Krematorium","Albisriederplatz","Zypressenstrasse","Lochergut","Kalkbreite/Bhf. Wiedikon","Bezirksgebäude","Stauffacher","Sihlpost/HB","Löwenplatz","Bahnhofplatz/HB","Central","Neumarkt","Kunsthaus","Hottingerplatz","Römerhof","Hölderlinstrasse","Klusplatz"],"4":["Bahnhofstrasse/HB","Central","Rudolf-Brun-Brücke","Rathaus","Helmhaus","Bellevue","Bhf. Stadelhofen","Kreuzplatz","Signaustrasse","Hegibachplatz","Hedwigsteig","Wetlistrasse","Burgwies","Balgrist","Friedhof Enzenbühl","Rehalp"],"5":["Laubegg","Saalsporthalle","Sihlcity Nord","Waffenplatzstrasse","Bhf. Enge/Bederstrasse","Tunnelstrasse","Stockerstrasse","Paradeplatz","Kantonalbank","Bürkliplatz","Bellevue","Bhf. Stadelhofen"],"6":["Zoo","Susenbergstrasse","Zürichbergstrasse","Toblerplatz","Kirche Fluntern","Voltastrasse","Platte","ETH/Universitätsspital","Haldenegg","Central","Bahnhofplatz/HB"],"7":["Bahnhof Stettbach","Mattenhof","Probstei","Glattwiesen","Roswiesen","Schwamendingerplatz","Überlandpark","Waldgarten","Tierspital","Milchbuck","Guggachstrasse","Schaffhauserplatz","Röslistrasse","Ottikerstrasse","Sonneggstrasse","Haldenegg","Central","Bahnhofstrasse/HB","Rennweg","Paradeplatz","Stockerstrasse","Tunnelstrasse","Bahnhof Enge","Museum Rietberg","Brunaustrasse","Billoweg","Bhf. Wollishofen/Staubstr.","Renggerstrasse","Morgental","Butzenstrasse","Wollishoferplatz"],"8":["Hardturm","Bernoulli-Häuser","Fischerweg","Förrlibuckstrasse","Escher-Wyss-Platz","Schiffbau","Bhf. Hardbrücke","Hardplatz","Güterbahnhof","Bäckeranlage","Helvetiaplatz","Stauffacher","Bahnhof Selnau","Tunnelstrasse","Bhf. Enge","Rentenanstalt","Bürkliplatz","Bellevue","Kunsthaus","Kantonsschule","Platte","Voltastrasse","Kirche Fluntern","Toblerplatz","Zürichbergstrasse","Susenbergstrasse","Zoo"],"9":["Hirzenbach","Altried","Luchswiesen","Luegisland","Heerenwiesen","Schwamendingerplatz","Überlandpark","Waldgarten","Tierspital","Milchbuck","Universität Irchel","Langmauerstrasse","Letzistrasse","Kinkelstrasse","Seilbahn Rigiblick","Winkelriedstrasse","Haldenbach","ETH/Universitätsspital","Kantonsschule","Kunsthaus","Bellevue","Bürkliplatz","Kantonalbank","Paradeplatz","Sihlstrasse","Stauffacher","Werd","Bhf. Wiedikon","Schmiede Wiedikon","Goldbrunnenplatz","Talwiesenstrasse","Heuried","Schaufelbergerstrasse","Triemli"],"10":["Zürich Flughafen, Fracht","Zürich Flughafen, Bahnhof","Kloten Balsberg, Bahnhof","Glattbrugg, Unterriet","Rümlang, Bäuler","Glattbrugg, Bahnhof","Glattpark, Lindberghplatz","Glattpark","Oerlikerhus","Leutschenbach","Bhf. Oerlikon Ost","Sternen Oerlikon","Salersteig","Berninaplatz","Hirschwiesenstrasse","Milchbuck","Universität Irchel","Langmauerstrasse","Letzistrasse","Kinkelstrasse","Seilbahn Rigiblick","Winkelriedstrasse","Haldenbach","ETH/Universitätsspital","Haldenegg","Central","Bahnhofstrasse/HB"],"11":["Bhf. Tiefenbrunnen","Wildbachstrasse","Fröhlichstrasse","Höschgasse","Feldeggstrasse","Kreuzstrasse","Opernhaus","Bellevue","Helmhaus","Rathaus","Rudolf-Brun-Brücke","Central"],"12":["Zürich Flughafen, Fracht","Zürich Flughafen, Bahnhof","Kloten Balsberg, Bahnhof","Glattbrugg, Unterriet","Rümlang, Bäuler","Glattbrugg, Bahnhof","Glattpark, Lindberghplatz","Glattpark","Zürich, Fernsehstudio","Zürich, Auzelg","Wallisellen, Herti","Wallisellen, Belair","Wallisellen, Bahnhof","Wallisellen, Glatt (Tram)","Wallisellen, Neugut","Dübendorf, Am Ring","Dübendorf, Ringwiesen","Zürich, Bahnhof Stettbach"],"13":["Bahnhofstrasse/HB","Rennweg","Paradeplatz","Stockerstrasse","Tunnelstrasse","Bhf. Enge/Bederstrasse","Waffenplatzstrasse","Sihlcity Nord","Saalsporthalle","Laubegg","Uetlihof","Strassenverkehrsamt","Albisgüetli"],"14":["Bahnhofplatz/HB","Löwenplatz","Sihlpost/HB","Stauffacher","Werd","Bhf. Wiedikon","Schmiede Wiedikon","Goldbrunnenplatz","Talwiesenstrasse","Heuried","Schaufelbergerstrasse","Triemli"],"15":["Bahnhofstrasse/HB","Central","Rudolf-Brun-Brücke","Rathaus","Helmhaus","Bellevue","Opernhaus","Kreuzstrasse","Feldeggstrasse","Höschgasse","Fröhlichstrasse","Wildbachstrasse","Bhf. Tiefenbrunnen"],"16":["Laubegg","Saalsporthalle","Sihlcity Nord","Waffenplatzstrasse","Zürich Enge, Bahnhof/Bederstr.","Tunnelstrasse","Stockerstrasse","Paradeplatz","Rennweg","Bahnhofstrasse/HB","Central","Haldenegg","Sonneggstrasse","Ottikerstrasse","Röslistrasse","Schaffhauserplatz","Guggachstrasse","Milchbuck"],"17":["Werdhölzli","Bändliweg","Grünaustrasse","Tüffenwies","Hardhof","Hardturm","Bernoulli-Häuser","Fischerweg","Förrlibuckstrasse","Escher-Wyss-Platz","Löwenbräu","Quellenstrasse","Limmatplatz","Museum für Gestaltung","Sihlquai/HB","Stampfenbachplatz","Beckenhof","Kronenstrasse","Schaffhauserplatz","Laubiweg","Bucheggplatz"],"50":["Frankental","Winzerstrasse","Wartau","Zwielplatz","Meierhofplatz","Schwert","Alte Trotte","Eschergutweg","Waidfussweg","Wipkingerplatz","Escher-Wyss-Platz","Löwenbräu","Quellenstrasse","Limmatplatz","Museum für Gestaltung","Sihlquai/HB","Stampfenbachplatz","Beckenhof","Kronenstrasse","Schaffhauserplatz","Laubiweg","Bucheggplatz","Brunnenhof","Bad Allenmoos","Regensbergbrücke","Bhf. Oerlikon","Sternen Oerlikon","Messe/Hallenstadion","Leutschenbach","Oerlikerhus","Glattpark","Fernsehstudio","Auzelg"],"51":["Bhf. Altstetten Nord","Würzgraben","Aargauerstrasse","Sportweg","Toni-Areal","Technopark","Schiffbau","Escher-Wyss-Platz","Löwenbräu","Quellenstrasse","Limmatplatz","Museum für Gestaltung","Sihlquai/HB","Stampfenbachplatz","Beckenhof","Kronenstrasse","Schaffhauserplatz","Guggachstrasse","Milchbuck","Hirschwiesenstrasse","Berninaplatz","Salersteig","Sternen Oerlikon","Bhf. Oerlikon Ost","Felsenrainstrasse","Seebacherplatz","Seebach"]};
 const COLORS={"2": "#D71920", "3": "#83B81A", "4": "#005CA9", "5": "#7A4A21", "6": "#8A2A2B", "7": "#111111", "8": "#69A82F", "9": "#17458F", "10": "#E779A8", "11": "#56A63C", "12": "#79C7E3", "13": "#F2A100", "14": "#7CB9D8", "15": "#B1428C", "16": "#007C91", "17": "#8B1F35", "50": "#8B1F35", "51": "#005CA9"};
 const TEXTCOLORS={"13": "#111111", "12": "#111111", "14": "#111111", "10": "#111111"};
 const IMPORTANT=["Römerhof", "Goldbrunnenplatz", "Escher-Wyss-Platz", "Bahnhof Enge", "Bürkliplatz", "Paradeplatz", "Bahnhofstrasse/HB", "Central", "Bellevue", "Bahnhof Stadelhofen", "Stauffacher", "Milchbuck", "Bahnhof Oerlikon", "Zürich Flughafen"];
 const HOTSPOTS={"Zürich Flughafen":[72.0,5.0],"Seebach":[68.0,11.5],"Auzelg":[79.0,18.0],"Bahnhof Oerlikon":[65.5,23.0],"Milchbuck":[55.1,40.0],"Bucheggplatz":[52.0,43.5],"Escher-Wyss-Platz":[40.5,49.5],"Bahnhof Altstetten Nord":[24.5,44.0],"Albisrieden":[8.5,60.5],"Triemli":[15.0,69.5],"Stauffacher":[42.0,64.0],"Paradeplatz":[51.0,69.0],"Central":[56.5,58.5],"Bellevue":[54.5,73.0],"Bahnhof Stadelhofen":[61.0,72.0],"Bahnhof Enge":[43.0,69.0],"Laubegg":[37.0,79.5],"Klusplatz":[72.5,67.0],"Rehalp":[86.0,82.5],"Bahnhof Tiefenbrunnen":[74.5,88.5],"Wollishoferplatz":[35.5,89.0],"Hirzenbach":[88.5,31.5],"Bahnhof Stettbach":[90.0,41.5],"Zoo":[83.0,54.8],"Frankental":[25.0,27.5],"Geissweid":[7.8,39.4],"Römerhof":[67.1,64.3],"Goldbrunnenplatz":[32.5,68.2],"Albisgüetli":[20.8,88.5],"Hardturm":[29.1,39.8],"Balgrist":[83.0,81.0],"Hegibachplatz":[72.8,76.8],"Bahnhof Selnau":[48.0,67.2],"Bahnhof Wiedikon":[39.6,66.1],"Hardplatz":[35.0,53.0],"Albisriederplatz":[27.8,55.0],"Letzigrund":[22.7,53.9],"Helvetiaplatz":[43.5,62.2],"Hottingerplatz":[65.4,66.8],"Universität Irchel":[65.4,36.5],"ETH/Universitätsspital":[65.7,59.1],"Sihlquai/HB":[49.8,54.2],"Limmatplatz":[44.8,50.2],"Haldenegg":[59.0,54.3],"Bezirksgebäude":[37.5,62.7]};
 const MAP_STOPS=Object.keys(HOTSPOTS);
 const MARKED_NODES=["Zürich Flughafen", "Bahnhof Oerlikon", "Milchbuck", "Schaffhauserplatz", "Bucheggplatz", "Escher-Wyss-Platz", "Limmatplatz", "Sihlquai/HB", "Bahnhofplatz/HB", "Bahnhofstrasse/HB", "Central", "Paradeplatz", "Stauffacher", "Bahnhof Enge", "Bürkliplatz", "Bellevue", "Bahnhof Stadelhofen", "Kreuzplatz", "Römerhof", "Goldbrunnenplatz", "Albisriederplatz", "Bahnhof Altstetten Nord", "Bahnhof Hardbrücke", "Bahnhof Stettbach"];
-const IMPORTANT_NODES_BY_LINE={"2":["Stauffacher","Paradeplatz","Bellevue","Bhf. Stadelhofen"],"3":["Albisriederplatz","Stauffacher","Bahnhofplatz/HB","Central","Römerhof"],"4":["Bahnhofstrasse/HB","Central","Bellevue","Bhf. Stadelhofen","Kreuzplatz","Balgrist","Rehalp"],"5":["Bhf. Enge/Bederstrasse","Paradeplatz","Bürkliplatz","Bellevue","Bhf. Stadelhofen"],"6":["Zoo","Kirche Fluntern","ETH/Universitätsspital","Central"],"7":["Bahnhof Stettbach","Milchbuck","Schaffhauserplatz","Central","Bahnhofstrasse/HB","Paradeplatz","Bahnhof Enge"],"8":["Escher-Wyss-Platz","Bhf. Hardbrücke","Stauffacher","Bhf. Enge","Bürkliplatz","Bellevue","Kirche Fluntern","Zoo"],"9":["Milchbuck","ETH/Universitätsspital","Bellevue","Bürkliplatz","Paradeplatz","Stauffacher","Goldbrunnenplatz","Triemli"],"10":["Zürich Flughafen, Bahnhof","Bhf. Oerlikon Ost","Milchbuck","ETH/Universitätsspital","Central","Bahnhofplatz/HB"],"11":["Bhf. Tiefenbrunnen","Opernhaus","Bellevue","Paradeplatz","Bahnhofstrasse/HB"],"12":["Zürich Flughafen, Bahnhof","Wallisellen, Bahnhof","Zürich, Bahnhof Stettbach"],"13":["Bahnhofstrasse/HB","Paradeplatz","Bhf. Enge/Bederstrasse","Laubegg","Albisgüetli"],"14":["Bahnhofplatz/HB","Stauffacher","Bhf. Wiedikon","Goldbrunnenplatz","Triemli"],"15":["Bahnhofstrasse/HB","Central","Bellevue","Opernhaus","Bhf. Tiefenbrunnen"],"16":["Bahnhof Enge/Bederstrasse","Paradeplatz","Bahnhofstrasse/HB","Central","Schaffhauserplatz","Milchbuck"],"17":["Escher-Wyss-Platz","Limmatplatz","Sihlquai/HB","Schaffhauserplatz","Bucheggplatz"],"50":["Frankental","Escher-Wyss-Platz","Limmatplatz","Sihlquai/HB","Schaffhauserplatz","Bucheggplatz","Bhf. Oerlikon","Auzelg"],"51":["Bhf. Altstetten Nord","Escher-Wyss-Platz","Limmatplatz","Sihlquai/HB","Schaffhauserplatz","Milchbuck","Bhf. Oerlikon Ost","Seebach"]};
+const IMPORTANT_NODES_BY_LINE={"2":["Stauffacher","Paradeplatz","Bellevue","Bhf. Stadelhofen"],"3":["Albisriederplatz","Stauffacher","Bahnhofplatz/HB","Central","Römerhof"],"4":["Bahnhofstrasse/HB","Central","Bellevue","Bhf. Stadelhofen","Kreuzplatz","Balgrist","Rehalp"],"5":["Bhf. Enge/Bederstrasse","Paradeplatz","Bürkliplatz","Bellevue","Bhf. Stadelhofen"],"6":["Zoo","Kirche Fluntern","ETH/Universitätsspital","Central","Bahnhofplatz/HB"],"7":["Bahnhof Stettbach","Milchbuck","Schaffhauserplatz","Central","Bahnhofstrasse/HB","Paradeplatz","Bahnhof Enge"],"8":["Escher-Wyss-Platz","Bhf. Hardbrücke","Stauffacher","Bhf. Enge","Bürkliplatz","Bellevue","Kirche Fluntern","Zoo"],"9":["Milchbuck","ETH/Universitätsspital","Bellevue","Bürkliplatz","Paradeplatz","Stauffacher","Goldbrunnenplatz","Triemli"],"10":["Zürich Flughafen, Bahnhof","Bhf. Oerlikon Ost","Milchbuck","ETH/Universitätsspital","Central","Bahnhofplatz/HB"],"11":["Bhf. Tiefenbrunnen","Opernhaus","Bellevue","Central"],"12":["Zürich Flughafen, Bahnhof","Wallisellen, Bahnhof","Zürich, Bahnhof Stettbach"],"13":["Bahnhofstrasse/HB","Paradeplatz","Bhf. Enge/Bederstrasse","Laubegg","Albisgüetli"],"14":["Bahnhofplatz/HB","Stauffacher","Bhf. Wiedikon","Goldbrunnenplatz","Triemli"],"15":["Bahnhofstrasse/HB","Central","Bellevue","Opernhaus","Bhf. Tiefenbrunnen"],"16":["Bahnhof Enge/Bederstrasse","Paradeplatz","Bahnhofstrasse/HB","Central","Schaffhauserplatz","Milchbuck"],"17":["Escher-Wyss-Platz","Limmatplatz","Sihlquai/HB","Schaffhauserplatz","Bucheggplatz"],"50":["Frankental","Escher-Wyss-Platz","Limmatplatz","Sihlquai/HB","Schaffhauserplatz","Bucheggplatz","Bhf. Oerlikon","Auzelg"],"51":["Bhf. Altstetten Nord","Escher-Wyss-Platz","Limmatplatz","Sihlquai/HB","Schaffhauserplatz","Milchbuck","Bhf. Oerlikon Ost","Seebach"]};
 const LINES=Object.keys(ROUTES);
 const LINKED_LINES={
   "4":{partner:"13",label:"4 + 13",ends:"Rehalp ↔ Albisgüetli"},
@@ -108,6 +109,9 @@ const LINKED_LINES={
 const LINKED_PAIRS=[{a:"4",b:"13",ends:"Rehalp ↔ Albisgüetli"},{a:"6",b:"14",ends:"Zoo ↔ Triemli"},{a:"11",b:"15",ends:"Bhf. Tiefenbrunnen ↔ Bhf. Tiefenbrunnen"}];
 let mode='map',score=0,attempts=0,skippedCount=0,current=null,examLeft=10,examScore=0;
 let mistakes=[],skippedQuestions=[],lastQuestionKey='';
+let questionHistory={stop:[],ends:[],nodes:[],connections:[],next:[],images:[],imageStops:[],mapquiz:[],linked:[]};
+const STORAGE_KEY='tramTrainerV4';
+const HISTORY_LIMITS={stop:10,ends:12,nodes:12,connections:12,next:40,images:36,imageStops:8,mapquiz:18,linked:10};
 function badge(l,cls=''){return `<span class="badge ${cls}">${l}</span>`}
 const scoreEl=document.getElementById('score'),hitRateEl=document.getElementById('hitRate'),skipRateEl=document.getElementById('skipRate');
 function updateStats(){
@@ -116,17 +120,73 @@ function updateStats(){
   const total=attempts+skippedCount;
   skipRateEl.textContent=(total?Math.round(skippedCount/total*100):0)+'%';
 }
-function save(){localStorage.setItem('tramTrainerV3',JSON.stringify({score,attempts,skippedCount,mistakes,skippedQuestions}));updateStats()}
-function load(){try{let x=JSON.parse(localStorage.getItem('tramTrainerV3')||'{}');if(!Object.keys(x).length){let old=JSON.parse(localStorage.getItem('tramTrainerV2')||'{}');x={score:old.score||0,attempts:old.attempts||0,mistakes:old.mistakes||[]}}score=x.score||0;attempts=x.attempts||0;skippedCount=x.skippedCount||0;mistakes=x.mistakes||[];skippedQuestions=x.skippedQuestions||[]}catch(e){}save()}
-function sample(a){return a[Math.floor(Math.random()*a.length)]} function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function save(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify({score,attempts,skippedCount,mistakes,skippedQuestions,questionHistory}))}catch(e){}
+  updateStats();
+}
+function load(){
+  try{
+    let x=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+    if(!Object.keys(x).length)x=JSON.parse(localStorage.getItem('tramTrainerV3')||'{}');
+    if(!Object.keys(x).length){
+      const old=JSON.parse(localStorage.getItem('tramTrainerV2')||'{}');
+      x={score:old.score||0,attempts:old.attempts||0,mistakes:old.mistakes||[]};
+    }
+    score=x.score||0;attempts=x.attempts||0;skippedCount=x.skippedCount||0;
+    mistakes=Array.isArray(x.mistakes)?x.mistakes:[];
+    skippedQuestions=Array.isArray(x.skippedQuestions)?x.skippedQuestions:[];
+    questionHistory={...questionHistory,...(x.questionHistory||{})};
+    Object.keys(questionHistory).forEach(k=>{if(!Array.isArray(questionHistory[k]))questionHistory[k]=[]});
+  }catch(e){}
+  save();
+}
+function resetProgress(){
+  if(!confirm('Gespeicherten Lernfortschritt wirklich vollständig zurücksetzen?'))return;
+  ['tramTrainerV2','tramTrainerV3',STORAGE_KEY].forEach(k=>localStorage.removeItem(k));
+  score=0;attempts=0;skippedCount=0;mistakes=[];skippedQuestions=[];lastQuestionKey='';
+  questionHistory={stop:[],ends:[],nodes:[],connections:[],next:[],images:[],imageStops:[],mapquiz:[],linked:[]};
+  examLeft=10;examScore=0;current=null;mode='map';save();next();
+}
+function sample(a){return a[Math.floor(Math.random()*a.length)]}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
 function norm(s){return s.toLowerCase().replace(/^zürich[ ,]+/,'').replace(/\bbhf\.?\b/g,'bahnhof').replace(/\bbahnhof n\b/g,'bahnhof nord').replace('bahnhofstrasse/hb','bahnhofstr./hb').replace('bahnhofstr./hb','bahnhofstrasse hb').replace(/[.,/()-]/g,' ').replace(/\s+/g,' ').trim()}
 function same(a,b){let A=norm(a),B=norm(b);if(A===B)return true;if(A.includes(B)||B.includes(A))return Math.min(A.length,B.length)>6;return false}
 function linesAt(stop){return LINES.filter(l=>ROUTES[l].some(s=>same(s,stop)))}
 function numericSort(a,b){return Number(a)-Number(b)}
 function resultLegend(){return `<div class="result-legend"><span><i class="legend-dot result-correct"></i> richtig gewählt</span><span><i class="legend-dot result-wrong"></i> falsch gewählt</span><span><i class="legend-dot result-missed"></i> richtig, nicht gewählt</span></div>`}
-function questionKey(q){if(!q)return'';return [q.type,q.stop||'',q.line||'',q.i??''].join('|')}
-function register(ok,q){attempts++;if(ok)score++;else if(q)mistakes.push({...q});save()}
+function questionKey(q){
+  if(!q)return'';
+  const pair=Array.isArray(q.pair)?q.pair.join('>'):(q.pair?`${q.pair.a||''}+${q.pair.b||''}`:'');
+  return [q.type,q.stop||'',q.line||'',q.i??'',q.src||'',pair,q.subtype||'',q.base||''].join('|');
+}
+function pushUnique(list,q,max=350){
+  const key=questionKey(q);if(!key)return;
+  const idx=list.findIndex(x=>questionKey(x)===key);if(idx>=0)list.splice(idx,1);
+  list.push({...q});if(list.length>max)list.splice(0,list.length-max);
+}
+function register(ok,q){attempts++;if(ok)score++;else if(q)pushUnique(mistakes,q);save()}
 function rememberCurrent(){lastQuestionKey=questionKey(current)}
+function recordHistory(type,key,limit=HISTORY_LIMITS[type]||12){
+  if(!questionHistory[type])questionHistory[type]=[];
+  questionHistory[type]=questionHistory[type].filter(x=>x!==key);
+  questionHistory[type].push(key);
+  if(questionHistory[type].length>limit)questionHistory[type].splice(0,questionHistory[type].length-limit);
+  save();
+}
+function freshPick(type,items,keyFn=x=>String(x),limit=HISTORY_LIMITS[type]||12){
+  if(!items.length)return null;
+  const recent=new Set(questionHistory[type]||[]);
+  let available=items.filter(x=>!recent.has(keyFn(x)));
+  if(!available.length){questionHistory[type]=[];available=[...items]}
+  const picked=sample(available);recordHistory(type,keyFn(picked),limit);return picked;
+}
+function freshImage(){
+  const recentImages=new Set(questionHistory.images||[]),recentStops=new Set(questionHistory.imageStops||[]);
+  let pool=IMAGE_QUIZ.filter(x=>!recentImages.has(x.src)&&!recentStops.has(x.stop));
+  if(!pool.length)pool=IMAGE_QUIZ.filter(x=>!recentImages.has(x.src));
+  if(!pool.length){questionHistory.images=[];pool=[...IMAGE_QUIZ]}
+  const item=sample(pool);recordHistory('images',item.src);recordHistory('imageStops',item.stop);return item;
+}
 function next(){
   if(current) rememberCurrent();
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
@@ -143,13 +203,11 @@ function next(){
   else qExam();
 }
 function skipQuestion(){
-  if(current && !current.answered){skippedCount++;skippedQuestions.push({...current});current.answered=true;save()}
+  if(current && !current.answered){skippedCount++;pushUnique(skippedQuestions,current);current.answered=true;save()}
   next();
 }
-function avoidRepeat(makeQuestion){for(let i=0;i<12;i++){makeQuestion();if(questionKey(current)!==lastQuestionKey)return;} }
 function qMapQuiz(q=null){
-  if(!q){let stop;do{stop=sample(MAP_STOPS)}while('mapquiz|'+stop+'||'===lastQuestionKey);q={stop}}
-  const stop=q?.stop||sample(MAP_STOPS);
+  const stop=q?.stop||freshPick('mapquiz',MAP_STOPS,s=>s);
   current={type:'mapquiz',stop};
   quiz.innerHTML=`
     <div class="kicker">Karten-Quiz</div>
@@ -205,16 +263,36 @@ function qMap(){
     <div class="question">Liniennetz</div>
     <div class="sub">Nur Tramlinien – inklusive der temporären Linie 16 sowie der Baustellenlinien 50 und 51.</div>
     <img src="tramnetz-2026.png" alt="VBZ Tramliniennetz 2026" style="width:100%;height:auto;border-radius:14px;border:1px solid var(--line);background:white">
-    <div class="route"><strong>Verknüpfte Linien:</strong> ${badge('4')} + ${badge('13')} Rehalp ↔ Albisgüetli · ${badge('6')} + ${badge('14')} Zoo ↔ Triemli · ${badge('11')} + ${badge('15')} Bhf. Tiefenbrunnen ↔ Bhf. Tiefenbrunnen</div><div class="route"><strong>Neu:</strong> ${badge('16')} Laubegg ↔ Milchbuck<br>
+    <div class="route linked-routes">
+      <strong style="display:block;margin-bottom:8px">Verknüpfte Linien:</strong>
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)">${badge('4')} <span>+</span> ${badge('13')} <span>Rehalp ↔ Albisgüetli</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)">${badge('6')} <span>+</span> ${badge('14')} <span>Zoo ↔ Triemli</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 0">${badge('11')} <span>+</span> ${badge('15')} <span>Bhf. Tiefenbrunnen ↔ Bhf. Tiefenbrunnen</span></div>
+    </div>
+    <div class="route linked-routes">
+      <strong style="display:block;margin-bottom:8px">Wichtige Knotenpunkte:</strong>
+      ${[
+        'Bahnhofplatz/HB','Bahnhofstrasse/HB','Central','Bellevue','Paradeplatz','Stauffacher',
+        'Bürkliplatz','Bahnhof Enge','Bahnhof Stadelhofen','ETH/Universitätsspital','Milchbuck',
+        'Schaffhauserplatz','Escher-Wyss-Platz','Limmatplatz','Sihlquai/HB','Albisriederplatz',
+        'Goldbrunnenplatz','Römerhof','Kreuzplatz','Bahnhof Hardbrücke','Bahnhof Oerlikon',
+        'Bahnhof Altstetten Nord','Bahnhof Stettbach'
+      ].map((node,i,arr)=>{
+        const ls=LINES.filter(l=>(IMPORTANT_NODES_BY_LINE[l]||[]).some(n=>norm(n)===norm(node)));
+        return `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 0;${i<arr.length-1?'border-bottom:1px solid var(--line)':''}"><span style="flex:1 1 180px">${node}</span><span style="display:flex;gap:6px;flex-wrap:wrap">${ls.map(l=>badge(l)).join('')}</span></div>`;
+      }).join('')}
+    </div>
+    <div class="route"><strong>Neu:</strong> ${badge('16')} Laubegg ↔ Milchbuck<br>
     Laubegg – Saalsporthalle – Sihlcity Nord – Waffenplatzstrasse – Bahnhof Enge/Bederstrasse – Tunnelstrasse – Stockerstrasse – Paradeplatz – Rennweg – Bahnhofstrasse/HB – Central – Haldenegg – Sonneggstrasse – Ottikerstrasse – Röslistrasse – Schaffhauserplatz – Guggachstrasse – Milchbuck</div>`;
 }
 
 function qStop(q=null){
-  const make=()=>{let stop=q?.stop||sample(IMPORTANT.filter(s=>linesAt(s).length));let correct=linesAt(stop);current={type:'stop',stop,correct};
+  const eligible=IMPORTANT.filter(s=>linesAt(s).length);
+  const stop=q?.stop||freshPick('stop',eligible,s=>s);
+  const correct=linesAt(stop);current={type:'stop',stop,correct};
   quiz.innerHTML=`<div class="kicker">Mehrfachauswahl</div><div class="question">Welche Tramlinien halten am <strong>${stop}</strong>?</div><div class="sub">Alle passenden Linien wählen.</div>
   <div class="pills">${LINES.map(l=>`<button class="pill" data-line="${l}" onclick="this.classList.toggle('sel')">${badge(l)}</button>`).join('')}</div>
-  <div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div><button class="btn primary" onclick="checkStop()">Prüfen</button></div>`};
-  if(q)make();else avoidRepeat(make)
+  <div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div><button class="btn primary" onclick="checkStop()">Prüfen</button></div>`;
 }
 function checkStop(){
   if(current?.answered)return;
@@ -247,7 +325,7 @@ function displayNodeName(s){
 
 function qNodes(q=null){
   const eligible=LINES.filter(l=>IMPORTANT_NODES_BY_LINE[l] && IMPORTANT_NODES_BY_LINE[l].length);
-  const line=q?.line||sample(eligible);
+  const line=q?.line||freshPick('nodes',eligible,l=>l);
   const correct=IMPORTANT_NODES_BY_LINE[line];
 
   const allNodes=[...new Set(Object.values(IMPORTANT_NODES_BY_LINE).flat())];
@@ -307,19 +385,16 @@ function checkNodes(){
 
 
 
-const IMAGE_QUIZ=[{"src":"bilderquiz/iq_001.jpg","stop":"Albisrieden"},{"src":"bilderquiz/iq_002.jpg","stop":"Bahnhof Enge"},{"src":"bilderquiz/iq_003.jpg","stop":"Bahnhofquai/Hauptbahnhof"},{"src":"bilderquiz/iq_004.jpg","stop":"Bahnhofstrasse/HB"},{"src":"bilderquiz/iq_005.jpg","stop":"Bellevue"},{"src":"bilderquiz/iq_006.jpg","stop":"Bürkliplatz"},{"src":"bilderquiz/iq_007.jpg","stop":"Central"},{"src":"bilderquiz/iq_008.jpg","stop":"Central"},{"src":"bilderquiz/iq_009.jpg","stop":"Escher-Wyss-Platz"},{"src":"bilderquiz/iq_010.jpg","stop":"Fernsehstudio"},{"src":"bilderquiz/iq_011.jpg","stop":"Glattpark"},{"src":"bilderquiz/iq_012.jpg","stop":"Goldbrunnenplatz"},{"src":"bilderquiz/iq_013.jpg","stop":"Hegibachplatz"},{"src":"bilderquiz/iq_014.jpg","stop":"Helvetiaplatz"},{"src":"bilderquiz/iq_015.jpg","stop":"Klusplatz"},{"src":"bilderquiz/iq_016.jpg","stop":"Limmatplatz"},{"src":"bilderquiz/iq_017.jpg","stop":"Limmatplatz"},{"src":"bilderquiz/iq_018.jpg","stop":"Paradeplatz"},{"src":"bilderquiz/iq_019.jpg","stop":"Paradeplatz"},{"src":"bilderquiz/iq_020.jpg","stop":"Rehalp"},{"src":"bilderquiz/iq_021.jpg","stop":"Römerhof"},{"src":"bilderquiz/iq_022.jpg","stop":"Seebach"},{"src":"bilderquiz/iq_023.jpg","stop":"Seebach"},{"src":"bilderquiz/iq_024.jpg","stop":"Sihlcity Nord"},{"src":"bilderquiz/iq_025.jpg","stop":"Bahnhof Stadelhofen"},{"src":"bilderquiz/iq_026.jpg","stop":"Bahnhof Stadelhofen"},{"src":"bilderquiz/iq_027.jpg","stop":"Stauffacher"},{"src":"bilderquiz/iq_028.jpg","stop":"Stauffacher"},{"src":"bilderquiz/iq_029.jpg","stop":"Bahnhof Tiefenbrunnen"},{"src":"bilderquiz/iq_030.jpg","stop":"Bahnhof Tiefenbrunnen"},{"src":"bilderquiz/iq_031.jpg","stop":"Triemli"},{"src":"bilderquiz/iq_032.jpg","stop":"Triemli"},{"src":"bilderquiz/iq_033.jpg","stop":"Triemli"},{"src":"bilderquiz/iq_034.jpg","stop":"Werdhölzli"},{"src":"bilderquiz/iq_035.jpg","stop":"Bahnhof Wollishofen"},{"src":"bilderquiz/iq_036.jpg","stop":"Wollishoferplatz"},{"src":"bilderquiz/iq_037.jpg","stop":"Wollishoferplatz"},{"src":"bilderquiz/iq_038.jpg","stop":"Zoo"},{"src":"bilderquiz/iq_039.jpg","stop":"Zoo"},{"src":"bilderquiz/iq_040.jpg","stop":"Albisrieden"},{"src":"bilderquiz/iq_041.jpg","stop":"Bahnhof Enge"},{"src":"bilderquiz/iq_042.jpg","stop":"Bahnhofquai/Hauptbahnhof"},{"src":"bilderquiz/iq_043.jpg","stop":"Bahnhofstrasse/HB"},{"src":"bilderquiz/iq_044.jpg","stop":"Bellevue"},{"src":"bilderquiz/iq_045.jpg","stop":"Bellevue"},{"src":"bilderquiz/iq_046.jpg","stop":"Bucheggplatz"},{"src":"bilderquiz/iq_047.jpg","stop":"Bucheggplatz"},{"src":"bilderquiz/iq_048.jpg","stop":"Bucheggplatz"},{"src":"bilderquiz/iq_049.jpg","stop":"Bucheggplatz"},{"src":"bilderquiz/iq_050.jpg","stop":"Bürkliplatz"},{"src":"bilderquiz/iq_051.jpg","stop":"Bürkliplatz"},{"src":"bilderquiz/iq_052.jpg","stop":"Central"},{"src":"bilderquiz/iq_053.jpg","stop":"Central"},{"src":"bilderquiz/iq_054.jpg","stop":"Central"},{"src":"bilderquiz/iq_055.jpg","stop":"Escher-Wyss-Platz"},{"src":"bilderquiz/iq_056.jpg","stop":"Escher-Wyss-Platz"},{"src":"bilderquiz/iq_057.jpg","stop":"Fernsehstudio"},{"src":"bilderquiz/iq_058.jpg","stop":"Zürich Flughafen"},{"src":"bilderquiz/iq_059.jpg","stop":"Zürich Flughafen"},{"src":"bilderquiz/iq_060.jpg","stop":"Zürich Flughafen"},{"src":"bilderquiz/iq_061.jpg","stop":"Frankental"},{"src":"bilderquiz/iq_062.jpg","stop":"Frankental"},{"src":"bilderquiz/iq_063.jpg","stop":"Geissweid"},{"src":"bilderquiz/iq_064.jpg","stop":"Geissweid"},{"src":"bilderquiz/iq_065.jpg","stop":"Glattbrugg"},{"src":"bilderquiz/iq_066.jpg","stop":"Glattpark"},{"src":"bilderquiz/iq_067.jpg","stop":"Goldbrunnenplatz"},{"src":"bilderquiz/iq_068.jpg","stop":"Hallenstadion"},{"src":"bilderquiz/iq_069.jpg","stop":"Hallenstadion"},{"src":"bilderquiz/iq_070.jpg","stop":"Bahnhof Hardbrücke"},{"src":"bilderquiz/iq_071.jpg","stop":"Bahnhof Hardbrücke"},{"src":"bilderquiz/iq_072.jpg","stop":"Hardplatz"},{"src":"bilderquiz/iq_073.jpg","stop":"Hardplatz"},{"src":"bilderquiz/iq_074.jpg","stop":"Hardturm"},{"src":"bilderquiz/iq_075.jpg","stop":"Hardturm"},{"src":"bilderquiz/iq_076.jpg","stop":"Hegibachplatz"},{"src":"bilderquiz/iq_077.jpg","stop":"Helvetiaplatz"},{"src":"bilderquiz/iq_078.jpg","stop":"Hottingerplatz"},{"src":"bilderquiz/iq_079.jpg","stop":"Klusplatz"},{"src":"bilderquiz/iq_080.jpg","stop":"Klusplatz"},{"src":"bilderquiz/iq_081.jpg","stop":"Kunsthaus"},{"src":"bilderquiz/iq_082.jpg","stop":"Laubegg"},{"src":"bilderquiz/iq_083.jpg","stop":"Laubegg"},{"src":"bilderquiz/iq_084.jpg","stop":"Limmatplatz"},{"src":"bilderquiz/iq_085.jpg","stop":"Limmatplatz"},{"src":"bilderquiz/iq_086.jpg","stop":"Milchbuck"},{"src":"bilderquiz/iq_087.jpg","stop":"Milchbuck"},{"src":"bilderquiz/iq_088.jpg","stop":"Paradeplatz"},{"src":"bilderquiz/iq_089.jpg","stop":"Paradeplatz"},{"src":"bilderquiz/iq_090.jpg","stop":"Rehalp"},{"src":"bilderquiz/iq_091.jpg","stop":"Römerhof"},{"src":"bilderquiz/iq_092.jpg","stop":"Schaffhauserplatz"},{"src":"bilderquiz/iq_093.jpg","stop":"Schaffhauserplatz"},{"src":"bilderquiz/iq_094.jpg","stop":"Schaffhauserplatz"},{"src":"bilderquiz/iq_095.jpg","stop":"Schaffhauserplatz"},{"src":"bilderquiz/iq_096.jpg","stop":"Schlieren"},{"src":"bilderquiz/iq_097.jpg","stop":"Schlieren"},{"src":"bilderquiz/iq_098.jpg","stop":"Stampfenbachplatz"},{"src":"bilderquiz/iq_099.jpg","stop":"Stampfenbachplatz"},{"src":"bilderquiz/iq_100.jpg","stop":"Stauffacher"},{"src":"bilderquiz/iq_101.jpg","stop":"Sternen Oerlikon"},{"src":"bilderquiz/iq_102.jpg","stop":"Sternen Oerlikon"},{"src":"bilderquiz/iq_103.jpg","stop":"Bahnhof Stettbach"},{"src":"bilderquiz/iq_104.jpg","stop":"Bahnhof Stettbach"},{"src":"bilderquiz/iq_105.jpg","stop":"Bahnhof Stettbach"},{"src":"bilderquiz/iq_106.jpg","stop":"Bahnhof Wallisellen"},{"src":"bilderquiz/iq_107.jpg","stop":"Bahnhof Wallisellen"},{"src":"bilderquiz/iq_108.jpg","stop":"Werdhölzli"}];
+const IMAGE_QUIZ=[{"src":"bilderquiz/iq_001.jpg","stop":"Albisrieden"},{"src":"bilderquiz/iq_002.jpg","stop":"Bahnhof Enge"},{"src":"bilderquiz/iq_003.jpg","stop":"Bahnhofquai/Hauptbahnhof"},{"src":"bilderquiz/iq_004.jpg","stop":"Bahnhofstrasse/HB"},{"src":"bilderquiz/iq_005.jpg","stop":"Bellevue"},{"src":"bilderquiz/iq_006.jpg","stop":"Bürkliplatz"},{"src":"bilderquiz/iq_007.jpg","stop":"Central"},{"src":"bilderquiz/iq_008.jpg","stop":"Central"},{"src":"bilderquiz/iq_009.jpg","stop":"Escher-Wyss-Platz"},{"src":"bilderquiz/iq_010.jpg","stop":"Fernsehstudio"},{"src":"bilderquiz/iq_011.jpg","stop":"Glattpark"},{"src":"bilderquiz/iq_012.jpg","stop":"Goldbrunnenplatz"},{"src":"bilderquiz/iq_013.jpg","stop":"Hegibachplatz"},{"src":"bilderquiz/iq_014.jpg","stop":"Helvetiaplatz"},{"src":"bilderquiz/iq_015.jpg","stop":"Klusplatz"},{"src":"bilderquiz/iq_016.jpg","stop":"Limmatplatz"},{"src":"bilderquiz/iq_017.jpg","stop":"Limmatplatz"},{"src":"bilderquiz/iq_018.jpg","stop":"Paradeplatz"},{"src":"bilderquiz/iq_019.jpg","stop":"Paradeplatz"},{"src":"bilderquiz/iq_020.jpg","stop":"Rehalp"},{"src":"bilderquiz/iq_021.jpg","stop":"Römerhof"},{"src":"bilderquiz/iq_022.jpg","stop":"Seebach"},{"src":"bilderquiz/iq_023.jpg","stop":"Seebach"},{"src":"bilderquiz/iq_024.jpg","stop":"Sihlcity Nord"},{"src":"bilderquiz/iq_025.jpg","stop":"Bahnhof Stadelhofen"},{"src":"bilderquiz/iq_026.jpg","stop":"Bahnhof Stadelhofen"},{"src":"bilderquiz/iq_027.jpg","stop":"Stauffacher"},{"src":"bilderquiz/iq_028.jpg","stop":"Stauffacher"},{"src":"bilderquiz/iq_029.jpg","stop":"Bahnhof Tiefenbrunnen"},{"src":"bilderquiz/iq_030.jpg","stop":"Bahnhof Tiefenbrunnen"},{"src":"bilderquiz/iq_031.jpg","stop":"Triemli"},{"src":"bilderquiz/iq_032.jpg","stop":"Triemli"},{"src":"bilderquiz/iq_033.jpg","stop":"Triemli"},{"src":"bilderquiz/iq_034.jpg","stop":"Werdhölzli"},{"src":"bilderquiz/iq_035.jpg","stop":"Bahnhof Wollishofen"},{"src":"bilderquiz/iq_036.jpg","stop":"Wollishoferplatz"},{"src":"bilderquiz/iq_037.jpg","stop":"Wollishoferplatz"},{"src":"bilderquiz/iq_038.jpg","stop":"Zoo"},{"src":"bilderquiz/iq_039.jpg","stop":"Zoo"},{"src":"bilderquiz/iq_040.jpg","stop":"Albisrieden"},{"src":"bilderquiz/iq_041.jpg","stop":"Bahnhof Enge"},{"src":"bilderquiz/iq_042.jpg","stop":"Bahnhofquai/Hauptbahnhof"},{"src":"bilderquiz/iq_043.jpg","stop":"Bahnhofstrasse/HB"},{"src":"bilderquiz/iq_044.jpg","stop":"Bellevue"},{"src":"bilderquiz/iq_045.jpg","stop":"Bellevue"},{"src":"bilderquiz/iq_046.jpg","stop":"Bucheggplatz"},{"src":"bilderquiz/iq_047.jpg","stop":"Bucheggplatz"},{"src":"bilderquiz/iq_048.jpg","stop":"Bucheggplatz"},{"src":"bilderquiz/iq_049.jpg","stop":"Bucheggplatz"},{"src":"bilderquiz/iq_050.jpg","stop":"Bürkliplatz"},{"src":"bilderquiz/iq_051.jpg","stop":"Bürkliplatz"},{"src":"bilderquiz/iq_052.jpg","stop":"Central"},{"src":"bilderquiz/iq_053.jpg","stop":"Central"},{"src":"bilderquiz/iq_054.jpg","stop":"Central"},{"src":"bilderquiz/iq_055.jpg","stop":"Escher-Wyss-Platz"},{"src":"bilderquiz/iq_056.jpg","stop":"Escher-Wyss-Platz"},{"src":"bilderquiz/iq_057.jpg","stop":"Fernsehstudio"},{"src":"bilderquiz/iq_058.jpg","stop":"Zürich Flughafen"},{"src":"bilderquiz/iq_059.jpg","stop":"Zürich Flughafen"},{"src":"bilderquiz/iq_060.jpg","stop":"Zürich Flughafen"},{"src":"bilderquiz/iq_061.jpg","stop":"Frankental"},{"src":"bilderquiz/iq_062.jpg","stop":"Frankental"},{"src":"bilderquiz/iq_063.jpg","stop":"Geissweid"},{"src":"bilderquiz/iq_064.jpg","stop":"Geissweid"},{"src":"bilderquiz/iq_065.jpg","stop":"Glattbrugg"},{"src":"bilderquiz/iq_066.jpg","stop":"Glattpark"},{"src":"bilderquiz/iq_067.jpg","stop":"Goldbrunnenplatz"},{"src":"bilderquiz/iq_068.jpg","stop":"Hallenstadion"},{"src":"bilderquiz/iq_069.jpg","stop":"Hallenstadion"},{"src":"bilderquiz/iq_070.jpg","stop":"Bahnhof Hardbrücke"},{"src":"bilderquiz/iq_071.jpg","stop":"Bahnhof Hardbrücke"},{"src":"bilderquiz/iq_072.jpg","stop":"Hardplatz"},{"src":"bilderquiz/iq_073.jpg","stop":"Hardplatz"},{"src":"bilderquiz/iq_074.jpg","stop":"Hardturm"},{"src":"bilderquiz/iq_075.jpg","stop":"Hardturm"},{"src":"bilderquiz/iq_076.jpg","stop":"Hegibachplatz"},{"src":"bilderquiz/iq_077.jpg","stop":"Helvetiaplatz"},{"src":"bilderquiz/iq_078.jpg","stop":"Hottingerplatz"},{"src":"bilderquiz/iq_079.jpg","stop":"Klusplatz"},{"src":"bilderquiz/iq_080.jpg","stop":"Klusplatz"},{"src":"bilderquiz/iq_081.jpg","stop":"Kunsthaus"},{"src":"bilderquiz/iq_082.jpg","stop":"Laubegg"},{"src":"bilderquiz/iq_083.jpg","stop":"Laubegg"},{"src":"bilderquiz/iq_084.jpg","stop":"Limmatplatz"},{"src":"bilderquiz/iq_085.jpg","stop":"Limmatplatz"},{"src":"bilderquiz/iq_086.jpg","stop":"Milchbuck"},{"src":"bilderquiz/iq_087.jpg","stop":"Milchbuck"},{"src":"bilderquiz/iq_088.jpg","stop":"Paradeplatz"},{"src":"bilderquiz/iq_089.jpg","stop":"Paradeplatz"},{"src":"bilderquiz/iq_090.jpg","stop":"Rehalp"},{"src":"bilderquiz/iq_091.jpg","stop":"Römerhof"},{"src":"bilderquiz/iq_092.jpg","stop":"Schaffhauserplatz"},{"src":"bilderquiz/iq_093.jpg","stop":"Schaffhauserplatz"},{"src":"bilderquiz/iq_094.jpg","stop":"Schaffhauserplatz"},{"src":"bilderquiz/iq_095.jpg","stop":"Schaffhauserplatz"},{"src":"bilderquiz/iq_096.jpg","stop":"Schlieren"},{"src":"bilderquiz/iq_097.jpg","stop":"Schlieren"},{"src":"bilderquiz/iq_098.jpg","stop":"Stampfenbachplatz"},{"src":"bilderquiz/iq_099.jpg","stop":"Stampfenbachplatz"},{"src":"bilderquiz/iq_100.jpg","stop":"Stauffacher"},{"src":"bilderquiz/iq_101.jpg","stop":"Sternen Oerlikon"},{"src":"bilderquiz/iq_102.jpg","stop":"Sternen Oerlikon"},{"src":"bilderquiz/iq_103.jpg","stop":"Bahnhof Stettbach"},{"src":"bilderquiz/iq_104.jpg","stop":"Bahnhof Stettbach"},{"src":"bilderquiz/iq_105.jpg","stop":"Bahnhof Stettbach"},{"src":"bilderquiz/iq_106.jpg","stop":"Bahnhof Wallisellen"},{"src":"bilderquiz/iq_107.jpg","stop":"Bahnhof Wallisellen"},{"src":"bilderquiz/iq_108.jpg","stop":"Werdhölzli"},{"src":"bilderquiz/iq_109.jpg","stop":"Bezirksgebäude"}];
 function qImages(q=null){
-  const make=()=>{
-    let item=q?.src?{src:q.src,stop:q.stop}:sample(IMAGE_QUIZ);
-    current={type:'images',src:item.src,stop:item.stop};
-    const stations=[...new Set(IMAGE_QUIZ.map(x=>x.stop))];
-    const opts=shuffle([item.stop,...shuffle(stations.filter(s=>s!==item.stop)).slice(0,3)]);
-    quiz.innerHTML=`<div class="kicker">Bilder-Quiz</div><div class="question">Welche Haltestelle ist auf diesem Bild zu sehen?</div>
-      <img src="${item.src}" alt="Haltestellenfoto" data-original-src="${item.src}" onerror="if(!this.dataset.retried){this.dataset.retried='1';this.src=this.dataset.originalSrc+'?refresh=20260819a';}else{this.style.display='none';this.insertAdjacentHTML('afterend','<div class=&quot;feedback bad&quot;>Bild konnte nicht geladen werden. Bitte einmal online neu laden.</div>');}" style="display:block;width:100%;max-height:430px;object-fit:contain;border-radius:14px;border:1px solid var(--line);background:#f5f5f5;margin-bottom:14px">
-      <div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(item.stop)})'>${o}</button>`).join('')}</div>
-      <div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div></div>`;
-  };
-  if(q)make();else avoidRepeat(make);
+  const item=q?.src?{src:q.src,stop:q.stop}:freshImage();
+  current={type:'images',src:item.src,stop:item.stop};
+  const stations=[...new Set(IMAGE_QUIZ.map(x=>x.stop))];
+  const opts=shuffle([item.stop,...shuffle(stations.filter(s=>s!==item.stop)).slice(0,3)]);
+  quiz.innerHTML=`<div class="kicker">Bilder-Quiz</div><div class="question">Welche Haltestelle ist auf diesem Bild zu sehen?</div>
+    <img src="${item.src}" alt="Haltestellenfoto" data-original-src="${item.src}" onerror="if(!this.dataset.retried){this.dataset.retried='1';this.src=this.dataset.originalSrc+'?refresh=20260820b';}else{this.style.display='none';this.insertAdjacentHTML('afterend','<div class=&quot;feedback bad&quot;>Bild konnte nicht geladen werden. Bitte einmal online neu laden.</div>');}" style="display:block;width:100%;max-height:430px;object-fit:contain;border-radius:14px;border:1px solid var(--line);background:#f5f5f5;margin-bottom:14px">
+    <div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(item.stop)})'>${o}</button>`).join('')}</div>
+    <div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div></div>`;
 }
 
 const CONNECTION_PAIRS=[
@@ -344,18 +419,16 @@ const CONNECTION_PAIRS=[
 ];
 function directLines(a,b){return LINES.filter(l=>ROUTES[l].some(s=>same(s,a))&&ROUTES[l].some(s=>same(s,b))).sort(numericSort)}
 function qConnections(q=null){
-  const make=()=>{
-    let pair=q?.pair||sample(CONNECTION_PAIRS.filter(([a,b])=>directLines(a,b).length));
-    let [from,to]=pair,correct=directLines(from,to);
-    current={type:'connections',pair:[from,to],correct};
-    quiz.innerHTML=`<div class="kicker">Direktverbindung</div>
-      <div class="question">Welche Tramlinie bringt dich ohne Umsteigen von <strong>${from}</strong> nach <strong>${to}</strong>?</div>
-      <div class="sub">Wähle alle Linien, mit denen du beide Haltestellen direkt erreichst.</div>
-      <div class="pills">${LINES.map(l=>`<button class="pill" data-line="${l}" onclick="this.classList.toggle('sel')">${badge(l)}</button>`).join('')}</div>
-      <div id="fb" class="feedback"></div>
-      <div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div><button class="btn primary" onclick="checkConnections()">Prüfen</button></div>`;
-  };
-  if(q)make();else avoidRepeat(make)
+  const eligible=CONNECTION_PAIRS.filter(([a,b])=>directLines(a,b).length);
+  const pair=q?.pair||freshPick('connections',eligible,p=>`${p[0]}>${p[1]}`);
+  const [from,to]=pair,correct=directLines(from,to);
+  current={type:'connections',pair:[from,to],correct};
+  quiz.innerHTML=`<div class="kicker">Direktverbindung</div>
+    <div class="question">Welche Tramlinie bringt dich ohne Umsteigen von <strong>${from}</strong> nach <strong>${to}</strong>?</div>
+    <div class="sub">Wähle alle Linien, mit denen du beide Haltestellen direkt erreichst.</div>
+    <div class="pills">${LINES.map(l=>`<button class="pill" data-line="${l}" onclick="this.classList.toggle('sel')">${badge(l)}</button>`).join('')}</div>
+    <div id="fb" class="feedback"></div>
+    <div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div><button class="btn primary" onclick="checkConnections()">Prüfen</button></div>`;
 }
 function checkConnections(){
   if(current?.type!=='connections'||current?.answered)return;
@@ -383,34 +456,49 @@ function checkConnections(){
 }
 
 function qLinked(q=null){
-  const make=()=>{
-    const pair=q?.pair||sample(LINKED_PAIRS);
-    const subtype=q?.subtype||sample(['pair','ends','partner']);
-    let question,answer,opts;
-    if(subtype==='pair'){
-      question=`Welche zwei Linien bilden gemeinsam die Verbindung <strong>${pair.ends}</strong>?`;
-      answer=`${pair.a} + ${pair.b}`;
-      opts=shuffle([answer,...shuffle(LINKED_PAIRS.filter(x=>x!==pair)).map(x=>`${x.a} + ${x.b}`)]);
-    }else if(subtype==='partner'){
-      const base=Math.random()<.5?pair.a:pair.b; const partner=base===pair.a?pair.b:pair.a;
-      question=`Mit welcher Linie ist die Linie ${badge(base)} verknüpft?`; answer=partner;
-      opts=shuffle([answer,...shuffle(LINES.filter(x=>x!==answer&&x!==base)).slice(0,3)]);
-    }else{
-      question=`Welche Gesamtstrecke gehört zu den verknüpften Linien <strong>${pair.a} + ${pair.b}</strong>?`; answer=pair.ends;
-      opts=shuffle([answer,...LINKED_PAIRS.filter(x=>x!==pair).map(x=>x.ends)]);
-    }
-    current={type:'linked',pair,subtype,answer};
-    single('Verknüpfte Linien',question,opts,answer);
-  }; if(q)make();else avoidRepeat(make);
+  let pair,subtype,base;
+  if(q){pair=q.pair;subtype=q.subtype;base=q.base}
+  else{
+    const candidates=LINKED_PAIRS.flatMap(p=>[
+      {pair:p,subtype:'pair',base:''},{pair:p,subtype:'ends',base:''},
+      {pair:p,subtype:'partner',base:p.a},{pair:p,subtype:'partner',base:p.b}
+    ]);
+    const pick=freshPick('linked',candidates,x=>`${x.pair.a}+${x.pair.b}|${x.subtype}|${x.base||''}`);
+    pair=pick.pair;subtype=pick.subtype;base=pick.base;
+  }
+  let question,answer,opts;
+  if(subtype==='pair'){
+    question=`Welche zwei Linien bilden gemeinsam die Verbindung <strong>${pair.ends}</strong>?`;
+    answer=`${pair.a} + ${pair.b}`;
+    opts=shuffle([answer,...shuffle(LINKED_PAIRS.filter(x=>x!==pair)).map(x=>`${x.a} + ${x.b}`)]);
+  }else if(subtype==='partner'){
+    base=base||(Math.random()<.5?pair.a:pair.b);const partner=base===pair.a?pair.b:pair.a;
+    question=`Mit welcher Linie ist die Linie ${badge(base)} verknüpft?`;answer=partner;
+    opts=shuffle([answer,...shuffle(LINES.filter(x=>x!==answer&&x!==base)).slice(0,3)]);
+  }else{
+    question=`Welche Gesamtstrecke gehört zu den verknüpften Linien <strong>${pair.a} + ${pair.b}</strong>?`;answer=pair.ends;
+    opts=shuffle([answer,...LINKED_PAIRS.filter(x=>x!==pair).map(x=>x.ends)]);
+  }
+  current={type:'linked',pair,subtype,base,answer};single('Verknüpfte Linien',question,opts,answer);
 }
 function qEnds(q=null){
   if(!q && Math.random()<0.35){qLinked();return;}
-  const make=()=>{let l=q?.line||sample(LINES),r=ROUTES[l],ans=`${r[0]} ↔ ${r.at(-1)}`;let opts=shuffle([ans,...shuffle(LINES.filter(x=>x!==l)).slice(0,3).map(x=>`${ROUTES[x][0]} ↔ ${ROUTES[x].at(-1)}`)]);current={type:'ends',line:l,answer:ans};
-    const linked=LINKED_LINES[l]?`<div class="sub">🔗 Linie ${l} ist mit Linie ${LINKED_LINES[l].partner} verknüpft · Gesamtverbindung: ${LINKED_LINES[l].ends}</div>`:'';
-    single(`TRAM ${badge(l)}${linked}`,`Welche Endpunkte gehören zu dieser Linie?`,opts,ans)};if(q)make();else avoidRepeat(make)}
+  const l=q?.line||freshPick('ends',LINES,x=>x),r=ROUTES[l],ans=`${r[0]} ↔ ${r.at(-1)}`;
+  const opts=shuffle([ans,...shuffle(LINES.filter(x=>x!==l)).slice(0,3).map(x=>`${ROUTES[x][0]} ↔ ${ROUTES[x].at(-1)}`)]);
+  current={type:'ends',line:l,answer:ans};
+  const linked=LINKED_LINES[l]?`<div class="sub">🔗 Linie ${l} ist mit Linie ${LINKED_LINES[l].partner} verknüpft · Gesamtverbindung: ${LINKED_LINES[l].ends}</div>`:'';
+  single(`TRAM ${badge(l)}${linked}`,`Welche Endpunkte gehören zu dieser Linie?`,opts,ans);
+}
 // Für das Quiz „Nächster Halt“ werden die einzelnen Linien exakt wie im Linien-PDF verwendet.
 const NEXT_ROUTES={...ROUTES};
-function qNext(q=null){const make=()=>{let l=q?.line||sample(LINES),r=NEXT_ROUTES[l],i=q?.i??Math.floor(Math.random()*(r.length-1)),ans=r[i+1];let pool=[...new Set(Object.values(NEXT_ROUTES).flat())].filter(x=>x!==ans&&x!==r[i]);let opts=shuffle([ans,...shuffle(pool).slice(0,3)]);current={type:'next',line:l,i,answer:ans};single(`TRAM ${badge(l)}`,`Was kommt Richtung <strong>${r.at(-1)}</strong> direkt nach <strong>${r[i]}</strong>?`,opts,ans)};if(q)make();else avoidRepeat(make)}
+const NEXT_QUESTION_POOL=LINES.flatMap(line=>NEXT_ROUTES[line].slice(0,-1).map((_,i)=>({line,i})));
+function qNext(q=null){
+  const picked=q?{line:q.line,i:q.i}:freshPick('next',NEXT_QUESTION_POOL,x=>`${x.line}|${x.i}`);
+  const l=picked.line,r=NEXT_ROUTES[l],i=picked.i,ans=r[i+1];
+  const pool=[...new Set(Object.values(NEXT_ROUTES).flat())].filter(x=>x!==ans&&x!==r[i]);
+  const opts=shuffle([ans,...shuffle(pool).slice(0,3)]);current={type:'next',line:l,i,answer:ans};
+  single(`TRAM ${badge(l)}`,`Was kommt Richtung <strong>${r.at(-1)}</strong> direkt nach <strong>${r[i]}</strong>?`,opts,ans);
+}
 function single(k,q,opts,ans){quiz.innerHTML=`<div class="kicker">${k}</div><div class="question">${q}</div><div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(ans)})'>${o}</button>`).join('')}</div><div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div></div>`}
 function choose(el,val,ans){if(current?.answered)return;let ok=val===ans;current.answered=true;register(ok,current);el.classList.add(ok?'correct':'wrong');[...document.querySelectorAll('.option')].forEach(x=>{if(x.textContent===ans)x.classList.add('correct')});showFb(ok,`Richtig: <b>${ans}</b>`)}
 function showFb(ok,text){let f=document.getElementById('fb');f.className='feedback '+(ok?'ok':'bad');f.innerHTML=ok?text:`Noch nicht. ${text}`}
@@ -421,6 +509,6 @@ function qExam(){if(examLeft<=0){quiz.innerHTML=`<div class="kicker">Prüfung be
 
 
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;if(mode==='exam'){examLeft=10;examScore=0}next()});
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(r=>r.update()).catch(()=>{}));
 load();next();
 </script></body></html>
