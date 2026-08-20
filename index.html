@@ -279,7 +279,7 @@ function qMap(){
         'Bahnhof Altstetten Nord','Bahnhof Stettbach'
       ].map((node,i,arr)=>{
         const ls=LINES.filter(l=>(IMPORTANT_NODES_BY_LINE[l]||[]).some(n=>norm(n)===norm(node)));
-        return `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 0;${i<arr.length-1?'border-bottom:1px solid var(--line)':''}"><span style="flex:1 1 180px">${node}</span><span style="display:flex;gap:6px;flex-wrap:wrap">${ls.map(l=>badge(l)).join('')}</span></div>`;
+        return `<div style="display:block;padding:10px 0;${i<arr.length-1?'border-bottom:1px solid var(--line)':''}"><span style="display:block;margin-bottom:8px">${node}</span><span style="display:flex;gap:6px;flex-wrap:wrap">${ls.map(l=>badge(l)).join('')}</span></div>`;
       }).join('')}
     </div>
     <div class="route"><strong>Neu:</strong> ${badge('16')} Laubegg ↔ Milchbuck<br>
