@@ -49,6 +49,13 @@ h1{margin:0;font-size:clamp(30px,8vw,48px);line-height:1} header p{margin:8px 0 
 .route{background:#eef5fb;padding:14px;border-radius:14px;line-height:1.65;margin-top:10px}
 .footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 8px}
 .reset-progress{margin-top:12px;border:1px solid #ffffff66;background:#ffffff14;color:#fff;border-radius:11px;padding:8px 11px;font-size:12px;font-weight:750;cursor:pointer} .reset-progress:active{background:#ffffff25}
+.exam-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;font-size:13px;font-weight:850;color:var(--blue)}
+.exam-timer{min-width:58px;text-align:center;padding:7px 10px;border:2px solid var(--blue);border-radius:999px;font-variant-numeric:tabular-nums;background:#eef5fb;color:var(--blue)}
+.exam-timer.warning{border-color:#e3262e;background:#fff0f0;color:#b3252a}
+.exam-progress{height:5px;background:#e6edf3;border-radius:999px;overflow:hidden;margin-bottom:18px}.exam-progress>span{display:block;height:100%;background:var(--blue);transition:width .2s ease}
+.exam-end-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}.exam-end-stat{border:1px solid var(--line);border-radius:13px;padding:12px 8px;text-align:center;background:#f8fafc}.exam-end-stat b{display:block;font-size:22px;color:var(--blue)}
+.exam-message{margin:14px 0;padding:15px 16px;border-radius:14px;background:#eef5fb;border:1px solid #cfe1f1;font-weight:800;line-height:1.35}
+.exam-breakdown{margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}.exam-breakdown-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px}.exam-breakdown-row+.exam-breakdown-row{border-top:1px solid var(--line)}.exam-breakdown-row b{color:var(--blue);white-space:nowrap}
 
 @media(max-width:520px){.connection-legend-item{grid-template-columns:34px minmax(0,1fr) minmax(0,1.55fr);gap:9px;padding:10px}.connection-legend-icon{width:30px;height:30px}.connection-legend-title{font-size:12px}.connection-legend-text{font-size:11px}}
 @media(min-width:720px){}
@@ -107,9 +114,14 @@ const LINKED_LINES={
   "15":{partner:"11",label:"11 + 15",ends:"Bhf. Tiefenbrunnen ↔ Bhf. Tiefenbrunnen"}
 };
 const LINKED_PAIRS=[{a:"4",b:"13",ends:"Rehalp ↔ Albisgüetli"},{a:"6",b:"14",ends:"Zoo ↔ Triemli"},{a:"11",b:"15",ends:"Bhf. Tiefenbrunnen ↔ Bhf. Tiefenbrunnen"}];
-let mode='map',score=0,attempts=0,skippedCount=0,current=null,examLeft=10,examScore=0;
+let mode='map',score=0,attempts=0,skippedCount=0,current=null,examLeft=0,examScore=0,examTimedOut=0,examActive=false,examTimerId=null,examDeadline=0,examQueue=[],examCurrentType='',examByType={};
+const EXAM_SECONDS=60,EXAM_PER_TYPE=10;
+const EXAM_TYPES=['ends','stop','nodes','connections','mapquiz','next','images'];
+const EXAM_TOTAL=EXAM_PER_TYPE*EXAM_TYPES.length;
+const EXAM_LABELS={ends:'Linie → Endpunkte',stop:'Haltestelle → Linien',nodes:'Knotenpunkte',connections:'Von A → B',mapquiz:'Karten-Quiz',next:'Nächster Halt',images:'Bilder-Quiz'};
 let mistakes=[],skippedQuestions=[],lastQuestionKey='';
 let questionHistory={stop:[],ends:[],nodes:[],connections:[],next:[],images:[],imageStops:[],mapquiz:[],linked:[]};
+let examHistory=[];
 const STORAGE_KEY='tramTrainerV4';
 const HISTORY_LIMITS={stop:10,ends:12,nodes:12,connections:12,next:40,images:36,imageStops:8,mapquiz:18,linked:10};
 function badge(l,cls=''){return `<span class="badge ${cls}">${l}</span>`}
@@ -121,7 +133,7 @@ function updateStats(){
   skipRateEl.textContent=(total?Math.round(skippedCount/total*100):0)+'%';
 }
 function save(){
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify({score,attempts,skippedCount,mistakes,skippedQuestions,questionHistory}))}catch(e){}
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify({score,attempts,skippedCount,mistakes,skippedQuestions,questionHistory,examHistory}))}catch(e){}
   updateStats();
 }
 function load(){
@@ -137,6 +149,7 @@ function load(){
     skippedQuestions=Array.isArray(x.skippedQuestions)?x.skippedQuestions:[];
     questionHistory={...questionHistory,...(x.questionHistory||{})};
     Object.keys(questionHistory).forEach(k=>{if(!Array.isArray(questionHistory[k]))questionHistory[k]=[]});
+    examHistory=Array.isArray(x.examHistory)?x.examHistory.slice(-20):[];
   }catch(e){}
   save();
 }
@@ -145,7 +158,8 @@ function resetProgress(){
   ['tramTrainerV2','tramTrainerV3',STORAGE_KEY].forEach(k=>localStorage.removeItem(k));
   score=0;attempts=0;skippedCount=0;mistakes=[];skippedQuestions=[];lastQuestionKey='';
   questionHistory={stop:[],ends:[],nodes:[],connections:[],next:[],images:[],imageStops:[],mapquiz:[],linked:[]};
-  examLeft=10;examScore=0;current=null;mode='map';save();next();
+  examHistory=[];
+  stopExamTimer();examLeft=0;examScore=0;examTimedOut=0;examActive=false;examQueue=[];examCurrentType='';examByType={};current=null;mode='map';save();next();
 }
 function sample(a){return a[Math.floor(Math.random()*a.length)]}
 function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
@@ -239,6 +253,8 @@ function mapPick(ev){
   // Generous mobile hit radius: minimum 34px, scales slightly on larger screens.
   const hitRadius=Math.max(34, Math.min(48, rect.width*0.085));
   const ok=distPx<=hitRadius;
+  const inExam=examActive&&mode==='exam';
+  if(inExam)stopExamTimer();
   current.answered=true;
   register(ok,current);
 
@@ -253,8 +269,9 @@ function mapPick(ev){
   f.innerHTML=ok ? `Treffer! <b>${current.stop}</b>.`
                  : `Nicht ganz. Der <b>grüne Punkt</b> zeigt die Position von <b>${current.stop}</b>.`;
 
-  document.querySelector('.controls').innerHTML=
-    '<div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div>';
+  const controls=document.querySelector('.controls');
+  if(!inExam && controls)controls.innerHTML='<div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div>';
+  if(inExam){examRecord(ok);setTimeout(()=>{if(examActive&&mode==='exam')qExam()},1100)}
 }
 
 function qMap(){
@@ -297,7 +314,9 @@ function qStop(q=null){
 function checkStop(){
   if(current?.answered)return;
   let s=[...document.querySelectorAll('.pill.sel')].map(x=>x.dataset.line).sort(numericSort);
-  let c=[...current.correct].sort(numericSort);let ok=JSON.stringify(s)===JSON.stringify(c);current.answered=true;register(ok,current);
+  let c=[...current.correct].sort(numericSort);let ok=JSON.stringify(s)===JSON.stringify(c);
+  const inExam=examActive&&mode==='exam';if(inExam)stopExamTimer();
+  current.answered=true;register(ok,current);
   document.querySelectorAll('.pill[data-line]').forEach(el=>{
     const l=el.dataset.line,selected=s.includes(l),correct=c.includes(l);
     el.classList.remove('sel');
@@ -316,6 +335,7 @@ function checkStop(){
     <div class="connection-legend-item"><span class="connection-legend-icon missed"></span><div class="connection-legend-title">Richtig, nicht gewählt</div><div class="connection-legend-text">Diese Linie hättest du zusätzlich auswählen müssen.</div></div>
   </div>`;
   const f=document.getElementById('fb');f.className='feedback';f.style.display='block';f.style.padding='0';f.style.background='transparent';f.innerHTML=legend;
+  if(inExam){examRecord(ok);setTimeout(()=>{if(examActive&&mode==='exam')qExam()},1200)}
 }
 
 
@@ -344,7 +364,7 @@ function qNodes(q=null){
     </div>
     <div id="fb" class="feedback"></div>
     <div class="controls">
-      <div style="display:flex;gap:9px;flex-wrap:wrap">
+      <div class="control-left" style="display:flex;gap:9px;flex-wrap:wrap">
         <button class="btn" onclick="skipQuestion()">Überspringen →</button>
         <button class="btn" onclick="next()">Weiter →</button>
       </div>
@@ -361,6 +381,7 @@ function checkNodes(){
   const s=[...selected].sort((a,b)=>a.localeCompare(b));
   const c=[...current.correct].sort((a,b)=>a.localeCompare(b));
   const ok=JSON.stringify(s)===JSON.stringify(c);
+  const inExam=examActive&&mode==='exam';if(inExam)stopExamTimer();
   register(ok,current);
 
   document.querySelectorAll('.nodepill').forEach(el=>{
@@ -380,6 +401,7 @@ function checkNodes(){
   const f=document.getElementById('fb');
   f.className='feedback '+(ok?'ok':'bad');
   f.innerHTML=`${ok?'Richtig':'Auswertung'}: <div class="node-results">${result}</div><div class="result-legend"><span><i class="legend-dot result-correct"></i> richtig gewählt</span><span><i class="legend-dot result-wrong"></i> falsch gewählt</span><span><i class="legend-dot result-missed"></i> richtig, nicht gewählt</span></div>`;
+  if(inExam){examRecord(ok);setTimeout(()=>{if(examActive&&mode==='exam')qExam()},1200)}
 }
 
 
@@ -434,7 +456,7 @@ function checkConnections(){
   if(current?.type!=='connections'||current?.answered)return;
   let s=[...document.querySelectorAll('.pill.sel')].map(x=>x.dataset.line).sort(numericSort);
   let c=[...current.correct].sort(numericSort);
-  let ok=JSON.stringify(s)===JSON.stringify(c);current.answered=true;register(ok,current);
+  let ok=JSON.stringify(s)===JSON.stringify(c);const inExam=examActive&&mode==='exam';if(inExam)stopExamTimer();current.answered=true;register(ok,current);
   document.querySelectorAll('.pill[data-line]').forEach(el=>{
     const l=el.dataset.line,selected=s.includes(l),correct=c.includes(l);
     el.classList.remove('sel');
@@ -453,6 +475,7 @@ function checkConnections(){
     <div class="connection-legend-item"><span class="connection-legend-icon missed"></span><div class="connection-legend-title">Richtig, nicht gewählt</div><div class="connection-legend-text">Diese Linie hättest du zusätzlich auswählen müssen.</div></div>
   </div>`;
   const f=document.getElementById('fb');f.className='feedback';f.style.display='block';f.style.padding='0';f.style.background='transparent';f.innerHTML=legend;
+  if(inExam){examRecord(ok);setTimeout(()=>{if(examActive&&mode==='exam')qExam()},1200)}
 }
 
 function qLinked(q=null){
@@ -500,15 +523,136 @@ function qNext(q=null){
   single(`TRAM ${badge(l)}`,`Was kommt Richtung <strong>${r.at(-1)}</strong> direkt nach <strong>${r[i]}</strong>?`,opts,ans);
 }
 function single(k,q,opts,ans){quiz.innerHTML=`<div class="kicker">${k}</div><div class="question">${q}</div><div class="options">${opts.map(o=>`<button class="option" onclick='choose(this,${JSON.stringify(o)},${JSON.stringify(ans)})'>${o}</button>`).join('')}</div><div id="fb" class="feedback"></div><div class="controls"><div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div></div>`}
-function choose(el,val,ans){if(current?.answered)return;let ok=val===ans;current.answered=true;register(ok,current);el.classList.add(ok?'correct':'wrong');[...document.querySelectorAll('.option')].forEach(x=>{if(x.textContent===ans)x.classList.add('correct')});showFb(ok,`Richtig: <b>${ans}</b>`)}
+function choose(el,val,ans){
+  if(current?.answered)return;
+  const inExam=examActive&&mode==='exam';
+  if(inExam)stopExamTimer();
+  const ok=val===ans;current.answered=true;register(ok,current);
+  el.classList.add(ok?'correct':'wrong');
+  [...document.querySelectorAll('.option')].forEach(x=>{x.disabled=true;if(x.textContent===ans)x.classList.add('correct')});
+  showFb(ok,`Richtig: <b>${ans}</b>`);
+  if(inExam){examRecord(ok);setTimeout(()=>{if(examActive&&mode==='exam')qExam()},900)}
+}
 function showFb(ok,text){let f=document.getElementById('fb');f.className='feedback '+(ok?'ok':'bad');f.innerHTML=ok?text:`Noch nicht. ${text}`}
 function renderStored(q){if(q.type==='stop')qStop(q);else if(q.type==='ends')qEnds(q);else if(q.type==='linked')qLinked(q);else if(q.type==='nodes')qNodes(q);else if(q.type==='connections')qConnections(q);else if(q.type==='mapquiz')qMapQuiz(q);else if(q.type==='images')qImages(q);else qNext(q)}
 function qRepeat(){if(!mistakes.length){quiz.innerHTML=`<div class="question">Keine offenen Fehler</div><div class="sub">Falsch beantwortete Fragen landen automatisch hier.</div>`;current=null;return}let q=mistakes.shift();save();renderStored(q)}
 function qSkipped(){if(!skippedQuestions.length){quiz.innerHTML=`<div class="question">Keine übersprungenen Fragen</div><div class="sub">Übersprungene Fragen kannst du hier gezielt nochmals üben.</div>`;current=null;return}let q=skippedQuestions.shift();save();renderStored(q)}
-function qExam(){if(examLeft<=0){quiz.innerHTML=`<div class="kicker">Prüfung beendet</div><div class="question">${examScore} / 10 richtig</div><div class="sub">Starte eine neue 10-Fragen-Prüfung.</div><button class="btn primary" onclick="examLeft=10;examScore=0;qExam()">Neue Prüfung</button>`;return}let t=sample(['ends','next']);let old=mode;mode=t;let before=score; if(t==='ends')qEnds();else qNext(); let oldChoose=window.choose; window.choose=function(el,val,ans){if(document.querySelector('.option.correct,.option.wrong'))return;let ok=val===ans;if(ok)examScore++;examLeft--;oldChoose(el,val,ans);setTimeout(()=>{mode='exam';qExam()},650)}}
+function stopExamTimer(){
+  if(examTimerId){clearInterval(examTimerId);examTimerId=null}
+}
+function buildExamQueue(){
+  const queue=[];let last='';
+  for(let round=0;round<EXAM_PER_TYPE;round++){
+    let order=shuffle(EXAM_TYPES);
+    if(last&&order[0]===last&&order.length>1){const t=order[0];order[0]=order[1];order[1]=t}
+    queue.push(...order);last=order.at(-1);
+  }
+  return queue;
+}
+function initExamBreakdown(){
+  examByType=Object.fromEntries(EXAM_TYPES.map(t=>[t,{correct:0,done:0}]));
+}
+function examRecord(ok){
+  if(!examActive||mode!=='exam')return;
+  if(ok)examScore++;
+  if(examCurrentType&&examByType[examCurrentType]){
+    examByType[examCurrentType].done++;
+    if(ok)examByType[examCurrentType].correct++;
+  }
+  examLeft=Math.max(0,examLeft-1);
+}
+function updateExamTimer(){
+  if(!examActive||mode!=='exam')return;
+  const left=Math.max(0,Math.ceil((examDeadline-Date.now())/1000));
+  const el=document.getElementById('examTimer');
+  if(el){el.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`;el.classList.toggle('warning',left<=10)}
+  if(left<=0)examTimeout();
+}
+function startExamTimer(){
+  stopExamTimer();examDeadline=Date.now()+EXAM_SECONDS*1000;updateExamTimer();examTimerId=setInterval(updateExamTimer,250);
+}
+function decorateExamQuestion(){
+  const n=EXAM_TOTAL-examLeft+1;
+  const typeDone=(examByType[examCurrentType]?.done||0)+1;
+  quiz.insertAdjacentHTML('afterbegin',`<div class="exam-head"><span>Frage ${n} von ${EXAM_TOTAL} · ${EXAM_LABELS[examCurrentType]} ${typeDone}/${EXAM_PER_TYPE}</span><span id="examTimer" class="exam-timer">1:00</span></div><div class="exam-progress"><span style="width:${((n-1)/EXAM_TOTAL)*100}%"></span></div>`);
+  quiz.querySelectorAll('.control-left').forEach(x=>x.remove());
+  const controls=quiz.querySelector('.controls');if(controls&&!controls.children.length)controls.remove();
+}
+function renderExamTimeoutAnswer(){
+  const f=document.getElementById('fb');
+  if(current?.type==='mapquiz'){
+    const wrap=document.getElementById('mapwrap');
+    if(wrap&&HOTSPOTS[current.stop]){const [tx,ty]=HOTSPOTS[current.stop];const marker=document.createElement('div');marker.className='mapmarker answer';marker.style.left=tx+'%';marker.style.top=ty+'%';wrap.appendChild(marker)}
+    if(f){f.className='feedback bad';f.innerHTML=`Zeit abgelaufen. Der grüne Punkt zeigt <b>${current.stop}</b>.`}
+    return;
+  }
+  document.querySelectorAll('.option,.pill,.nodepill').forEach(x=>x.disabled=true);
+  if(current?.answer){
+    [...document.querySelectorAll('.option')].forEach(x=>{if(x.textContent===current.answer)x.classList.add('correct')});
+    if(f){f.className='feedback bad';f.innerHTML=`Zeit abgelaufen. Richtig: <b>${current.answer}</b>`}
+  }else if(Array.isArray(current?.correct)){
+    const txt=current.type==='nodes'?current.correct.map(displayNodeName).join(', '):current.correct.join(', ');
+    if(f){f.className='feedback bad';f.innerHTML=`Zeit abgelaufen. Richtig: <b>${txt}</b>`}
+  }else if(current?.stop){
+    if(f){f.className='feedback bad';f.innerHTML=`Zeit abgelaufen. Richtig: <b>${current.stop}</b>`}
+  }
+}
+function examTimeout(){
+  if(!examActive||mode!=='exam'||current?.answered)return;
+  stopExamTimer();current.answered=true;register(false,current);examTimedOut++;examRecord(false);renderExamTimeoutAnswer();
+  setTimeout(()=>{if(examActive&&mode==='exam')qExam()},1300);
+}
+function startExam(){
+  stopExamTimer();examQueue=buildExamQueue();examLeft=EXAM_TOTAL;examScore=0;examTimedOut=0;examActive=true;examCurrentType='';initExamBreakdown();mode='exam';
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.mode==='exam'));
+  qExam();
+}
+function recordExamResult(pct){
+  examHistory.push({pct,ts:Date.now()});
+  if(examHistory.length>20)examHistory=examHistory.slice(-20);
+  save();
+}
+function examMessage(pct){
+  const lastThree=examHistory.slice(-3);
+  if(lastThree.length===3&&lastThree.every(x=>Number(x.pct)<35))return 'Dreimal unter 35 % … jetzt hilft nur noch Feldforschung. 😄 Lernrunde einlegen – oder ab ins Tram und Zürich erfahren. 🚋';
+  if(pct===100)return 'Geschafft – bald wird eine Tramstrecke nach dir benannt. 🚋😉';
+  if(pct>=90)return 'Sehr stark! Nur noch ein paar Haltestellen trennen dich vom Tram-Nerd-Status. 😉';
+  if(pct>=80)return 'Stark. Du könntest langsam anfangen, anderen den Weg zu erklären.';
+  if(pct>=65)return 'Sehr ordentlich! Zürich wird langsam übersichtlich. 😎';
+  if(pct>=50)return 'Halbe Strecke geschafft. Du weisst schon ziemlich gut, wo die Reise hingeht.';
+  if(pct>=35)return 'Die Richtung stimmt – aber ein paar Linien fahren noch ohne dich. 🚋';
+  return 'Da fehlen noch ein paar Haltestellen im Netz. 😉 Erst etwas üben, dann nochmals antreten.';
+}
+function finishExam(){
+  stopExamTimer();examActive=false;current=null;
+  const pct=Math.round(examScore/EXAM_TOTAL*100),wrong=EXAM_TOTAL-examScore;
+  recordExamResult(pct);
+  const breakdown=EXAM_TYPES.map(t=>`<div class="exam-breakdown-row"><span>${EXAM_LABELS[t]}</span><b>${examByType[t]?.correct||0} / ${EXAM_PER_TYPE}</b></div>`).join('');
+  quiz.innerHTML=`<div class="kicker">Prüfung beendet</div><div class="question">${examScore} / ${EXAM_TOTAL} richtig</div><div class="exam-message">${examMessage(pct)}</div><div class="exam-end-grid"><div class="exam-end-stat"><b>${pct}%</b>Trefferquote</div><div class="exam-end-stat"><b>${wrong}</b>falsch</div><div class="exam-end-stat"><b>${examTimedOut}</b>Zeit abgelaufen</div></div><div class="sub"><strong>Auswertung nach Quiz:</strong></div><div class="exam-breakdown">${breakdown}</div><div class="controls"><button class="btn" onclick="mode='repeat';next()">Fehler wiederholen</button><button class="btn primary" onclick="startExam()">Neue Prüfung</button></div>`;
+}
+function qExam(){
+  stopExamTimer();
+  if(examLeft<=0){finishExam();return}
+  examActive=true;mode='exam';
+  const idx=EXAM_TOTAL-examLeft;
+  examCurrentType=examQueue[idx]||EXAM_TYPES[idx%EXAM_TYPES.length];
+  if(examCurrentType==='ends')qEnds();
+  else if(examCurrentType==='stop')qStop();
+  else if(examCurrentType==='nodes')qNodes();
+  else if(examCurrentType==='connections')qConnections();
+  else if(examCurrentType==='mapquiz')qMapQuiz();
+  else if(examCurrentType==='next')qNext();
+  else qImages();
+  decorateExamQuestion();startExamTimer();
+}
 
 
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;if(mode==='exam'){examLeft=10;examScore=0}next()});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  stopExamTimer();
+  const target=b.dataset.mode;
+  if(target==='exam'){startExam();return}
+  examActive=false;mode=target;next();
+});
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(r=>r.update()).catch(()=>{}));
 load();next();
 </script></body></html>
