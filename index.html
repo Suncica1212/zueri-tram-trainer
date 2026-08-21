@@ -231,7 +231,7 @@ function goBackQuestion(){
 }
 function quizControls(checkAction=''){
   const backDisabled=quizTrailIndex<=0?' disabled':'';
-  return `<div class="quiz-nav"><button class="btn" onclick="goBackQuestion()"${backDisabled}>← Zurück</button><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div>${checkAction?`<button class="btn primary quiz-check" onclick="${checkAction}">Prüfen</button>`:''}`;
+  return `<div class="quiz-nav"><button class="btn" onclick="goBackQuestion()"${backDisabled}>← Zurück</button><button class="btn" onclick="skipQuestion()">Überspringen</button><button class="btn" onclick="next()">Weiter →</button></div>${checkAction?`<button class="btn primary quiz-check" onclick="${checkAction}">Prüfen</button>`:''}`;
 }
 function generateCurrent(){
   if(mode==='stop')qStop();
@@ -307,7 +307,7 @@ function mapPick(ev){
                  : `Nicht ganz. Der <b>grüne Punkt</b> zeigt die Position von <b>${current.stop}</b>.`;
 
   const controls=document.querySelector('.controls');
-  if(!inExam && controls)controls.innerHTML='<div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen →</button><button class="btn" onclick="next()">Weiter →</button></div>';
+  if(!inExam && controls)controls.innerHTML='<div class="control-left"><button class="btn" onclick="skipQuestion()">Überspringen</button><button class="btn" onclick="next()">Weiter →</button></div>';
   if(inExam){examRecord(ok);setTimeout(()=>{if(examActive&&mode==='exam')qExam()},1100)}
 }
 
